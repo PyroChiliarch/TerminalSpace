@@ -43,11 +43,10 @@ namespace Consolespaceships
             Console.WriteLine("Client Started");
         }
 
-        public void Loop()
+        public void Loop(string message)
         {
             
 
-            string message = null;
             try
             {
                 //Prepare Message
@@ -57,6 +56,7 @@ namespace Consolespaceships
                 //Send Message
                 stream.Write(data, 0, data.Length);
                 Console.WriteLine("Sent: {0}", message);
+
 
                 //Receive response
                 data = new Byte[256];

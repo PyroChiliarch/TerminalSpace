@@ -21,7 +21,7 @@ namespace Consolespaceships
 
             while (true)
             {
-                client.Loop();
+                client.Loop(Console.ReadLine());
             }
 
             Console.WriteLine("\nPress Enter to continue");
