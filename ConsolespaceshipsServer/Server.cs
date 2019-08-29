@@ -49,7 +49,7 @@ namespace ConsolespaceshipsServer
             try
             {
                 Byte[] bytes = new Byte[256];
-                String data = null;
+                String incomingCommand = null;
 
                 while (true)
                 {
@@ -57,22 +57,49 @@ namespace ConsolespaceshipsServer
                     TcpClient client = serverListener.AcceptTcpClient();
                     Console.WriteLine("Connected!");
 
-                    data = null;
 
                     NetworkStream stream = client.GetStream();
 
+
+                    //Continue to loop client while the clients stream is active
                     int i;
                     while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                     {
-                        data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-                        Console.WriteLine("Received {0}", data);
+                        //Reset Variables
+                        incomingCommand = null;
 
-                        data = data.ToUpper();
 
-                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
+                        //While reading stream
+                        //Write incoming data to the console
+                        incomingCommand = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                        incomingCommand = incomingCommand.ToUpper();
+                        Console.WriteLine("Received {0}", incomingCommand);
 
-                        stream.Write(msg, 0, msg.Length);
-                        Console.WriteLine("Sent: {0}", data);
+                        //Take action on client commands
+                        if (incomingCommand == "WHERE AM I")
+                        {
+                            
+
+                            //Tell client where they are
+                            string returnMsg = "YOU ARE HERE";
+                            //Print response to console
+                            Console.WriteLine(returnMsg);
+                            //Send response
+                            byte[] returnData = System.Text.Encoding.ASCII.GetBytes(returnMsg);
+                            stream.Write(returnData, 0, returnData.Length);
+                        } else
+                        {
+                            //If unknown command
+                            //Let client know
+                            byte[] msg = System.Text.Encoding.ASCII.GetBytes("Unknown Command: " + incomingCommand);
+                            stream.Write(msg, 0, msg.Length);
+                            Console.WriteLine("Error: Unknown Command");
+                        }
+
+
+
+
+                        
                     }
 
                     client.Close();
