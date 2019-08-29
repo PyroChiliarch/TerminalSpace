@@ -43,14 +43,13 @@ namespace Consolespaceships
             Console.WriteLine("Client Started");
         }
 
-        public void Loop(string message)
+        public string SendCommand(string message)
         {
             
 
             try
             {
                 //Prepare Message
-                message = Console.ReadLine();
                 Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
 
                 //Send Message
@@ -63,7 +62,7 @@ namespace Consolespaceships
                 string responseData = String.Empty;
                 Int32 bytes = stream.Read(data, 0, data.Length);
                 responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-                Console.WriteLine("Received: {0}", responseData);
+                return responseData;
 
 
             }
@@ -75,9 +74,9 @@ namespace Consolespaceships
             {
                 Console.WriteLine("SocketException: {0}", e);
             }
-            
 
-            
+
+            return "UNKNOWN ERROR";
         }
 
         public void Stop ()
