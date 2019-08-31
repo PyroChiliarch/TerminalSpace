@@ -24,9 +24,6 @@ namespace ConsolespaceshipsServer
             Application.Run(new ServerWindowForm());
             
             
-            
         }
-
-       
     }
 }
