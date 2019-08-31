@@ -16,11 +16,17 @@ namespace Consolespaceships
         {
             Console.Title = "Terminal Space : Client : " + version;
 
-            //Connect to server and do nothing
+            //Connect to server
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             s.Connect("127.0.0.1", 8);
-            //Hang once connected to the server
-            Console.ReadLine();
+            
+            //Keep sending messages
+            while (true)
+            {
+                string msg = Console.ReadLine();
+                s.Send(Encoding.Default.GetBytes(msg));
+            }
+            
             s.Close();
             s.Dispose();
             
