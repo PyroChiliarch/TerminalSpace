@@ -12,23 +12,45 @@ namespace Consolespaceships
     class Program
     {
         const string version = "v1.0";
+
+
         static void Main(string[] args)
         {
             Console.Title = "Terminal Space : Client : " + version;
 
             //Connect to server
-            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            s.Connect("127.0.0.1", 8);
+            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            socket.Connect("127.0.0.1", 8);
             
             //Keep sending messages
             while (true)
             {
-                string msg = Console.ReadLine();
-                s.Send(Encoding.Default.GetBytes(msg));
+                string msg = "";
+
+                //Make sure the msg sent is not empty
+                while (msg == "")
+                {
+                    msg = Console.ReadLine();
+                }
+                
+                
+                socket.Send(Encoding.Default.GetBytes(msg));
+
+                /*
+                byte[] buffer = new byte[8192];
+                int msgLength = socket.Receive(buffer);
+
+                if (msgLength < buffer.Length)
+                {
+                    Array.Resize<byte>(ref buffer, msgLength);
+                }
+
+                Console.WriteLine(Encoding.Default.GetString(buffer));
+                */
             }
-            
-            s.Close();
-            s.Dispose();
+
+            socket.Close();
+            socket.Dispose();
             
         }
 

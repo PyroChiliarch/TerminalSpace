@@ -61,9 +61,9 @@ namespace ConsolespaceshipsServer
                 }
 
                 //We received a msg, so trigger the event(Delegate) for the client
-                if (ReceivedMsg != null)
+                if (ReceivedMsgEvent != null)
                 {
-                    ReceivedMsg(this, buffer);
+                    ReceivedMsgEvent(this, buffer);
                 }
 
                 //Begin the thread again and listen for another msg from the connection
@@ -75,9 +75,9 @@ namespace ConsolespaceshipsServer
                 Console.WriteLine(ex.Message);
 
                 //Call the Client has disconnected event so  it can be cleaned up properly and handled properly
-                if (Disconnected != null)
+                if (DisconnectedEvent != null)
                 {
-                    Disconnected(this);
+                    DisconnectedEvent(this);
                 }
                 
             }
@@ -91,14 +91,20 @@ namespace ConsolespaceshipsServer
             socket.Dispose();
         }
 
+        //Sends a string to the client
+        public void Send(string msg)
+        {
+            socket.Send(Encoding.Default.GetBytes(msg));
+        }
+
         //Triggers when the remote client sends a message
         public delegate void ClientReceivedMsgHandler(Client sender, byte[] data);
 
         //Triggers when the remote client disconnects
         public delegate void ClientDisconnectedHandler(Client sender);
 
-        public event ClientReceivedMsgHandler ReceivedMsg;
-        public event ClientDisconnectedHandler Disconnected;
+        public event ClientReceivedMsgHandler ReceivedMsgEvent;
+        public event ClientDisconnectedHandler DisconnectedEvent;
 
     }
 }

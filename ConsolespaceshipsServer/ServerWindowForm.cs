@@ -17,6 +17,8 @@ namespace ConsolespaceshipsServer
     {
         //Listener for new connections
         Listener listener;
+        Player player;
+        
 
         //Constructor, run when form is started
         public ServerWindowForm()
@@ -29,8 +31,20 @@ namespace ConsolespaceshipsServer
             //Event for new connections
             listener.SocketAccepted += new Listener.SocketAcceptedHandler(listener_SocketAccepted);
 
+            //Initialise our only player
+            player = new Player();
+
+            //Setup external Player commands
+            Player.commandList["yell"] += Player_PlayerYellEvent;
+
+
             //Load event for the windows form
             Load += new EventHandler(ServerWindowForm_Load);
+        }
+
+        private void Player_PlayerYellEvent(string action)
+        {
+            Console.WriteLine("Player is Yelling!");
         }
 
         private void ServerWindowForm_Load(object sender, EventArgs e)
@@ -40,12 +54,12 @@ namespace ConsolespaceshipsServer
         }
 
         //Called when a new connection is made
-        private void listener_SocketAccepted(System.Net.Sockets.Socket newConnection)
+        private void listener_SocketAccepted(Socket newConnection)
         {
             //Setup a new client with a the new connection(Socket)
             Client client = new Client(newConnection);
-            client.ReceivedMsg += new Client.ClientReceivedMsgHandler(client_ReceivedMsg);
-            client.Disconnected += new Client.ClientDisconnectedHandler(client_Disconnected);
+            client.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(client_ReceivedMsg);
+            client.DisconnectedEvent += new Client.ClientDisconnectedHandler(client_Disconnected);
 
             //Add the new client to the list in the window
             Invoke((MethodInvoker)delegate
@@ -80,6 +94,8 @@ namespace ConsolespaceshipsServer
 
         private void client_ReceivedMsg(Client sender, byte[] data)
         {
+            string incomingMsg = Encoding.Default.GetString(data);
+
             //Update the client table with the message that was received
             Invoke((MethodInvoker)delegate
             {
@@ -89,12 +105,15 @@ namespace ConsolespaceshipsServer
 
                     if (client.ID == sender.ID)
                     {
-                        lstClients.Items[i].SubItems[2].Text = Encoding.Default.GetString(data);
+                        lstClients.Items[i].SubItems[2].Text = incomingMsg;
                         lstClients.Items[i].SubItems[3].Text = DateTime.Now.ToString();
                         break;
                     }
                 }
             });
+
+            player.RunCommand(incomingMsg);
+            
         }
 
         
