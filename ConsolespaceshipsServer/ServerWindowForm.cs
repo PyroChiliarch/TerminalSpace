@@ -1,0 +1,102 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+using System.Net;
+using System.Net.Sockets;
+
+namespace ConsolespaceshipsServer
+{
+    public partial class ServerWindowForm : Form
+    {
+        //Listener for new connections
+        Listener listener;
+
+        //Constructor, run when form is started
+        public ServerWindowForm()
+        {
+            //Initialise the Form
+            InitializeComponent();
+
+            //Setup new connection listener
+            listener = new Listener(8);
+            //Event for new connections
+            listener.SocketAccepted += new Listener.SocketAcceptedHandler(listener_SocketAccepted);
+
+            //Load event for the windows form
+            Load += new EventHandler(ServerWindowForm_Load);
+        }
+
+        private void ServerWindowForm_Load(object sender, EventArgs e)
+        {
+            //Start the listener
+            listener.Start();
+        }
+
+        //Called when a new connection is made
+        private void listener_SocketAccepted(System.Net.Sockets.Socket newConnection)
+        {
+            //Setup a new client with a the new connection(Socket)
+            Client client = new Client(newConnection);
+            client.ReceivedMsg += new Client.ClientReceivedMsgHandler(client_ReceivedMsg);
+            client.Disconnected += new Client.ClientDisconnectedHandler(client_Disconnected);
+
+            //Add the new client to the list in the window
+            Invoke((MethodInvoker)delegate
+            {
+               ListViewItem i = new ListViewItem();
+               i.Text = client.EndPoint.ToString(); //End point = IP + Port
+               i.SubItems.Add(client.ID); //GUID of client
+               i.SubItems.Add("xx"); //Last Message
+               i.SubItems.Add("xx"); //Last message Time
+               i.Tag = client; //Not sure what it is, but its important
+               lstClients.Items.Add(i);
+            });
+        }
+
+        private void client_Disconnected(Client sender)
+        {
+            //Remove the client that disconnected from the client list
+            Invoke((MethodInvoker)delegate
+            {
+               for (int i = 0; i < lstClients.Items.Count; i++)
+               {
+                   Client client = lstClients.Items[i].Tag as Client;
+
+                   if (client.ID == sender.ID)
+                   {
+                       lstClients.Items.RemoveAt(i);
+                       break;
+                   }
+               }
+            });
+        }
+
+        private void client_ReceivedMsg(Client sender, byte[] data)
+        {
+            //Update the client table with the message that was received
+            Invoke((MethodInvoker)delegate
+            {
+                for (int i = 0; i < lstClients.Items.Count; i++)
+                {
+                    Client client = lstClients.Items[i].Tag as Client;
+
+                    if (client.ID == sender.ID)
+                    {
+                        lstClients.Items[i].SubItems[2].Text = Encoding.Default.GetString(data);
+                        lstClients.Items[i].SubItems[3].Text = DateTime.Now.ToString();
+                        break;
+                    }
+                }
+            });
+        }
+
+        
+    }
+}
