@@ -77,7 +77,7 @@ namespace ConsolespaceshipsServer
             //Will begin to listen for new connections
             //The callback function recalls this method so that a loop is made
             //This allows the Listener to continue accepting new connections
-            s.BeginAccept(callback_newConnection, null);
+            s.BeginAccept(Callback_newConnection, null);
 
             //We are now continuously listening for connections
             Listening = true;
@@ -101,7 +101,7 @@ namespace ConsolespaceshipsServer
         //Our socket is activley listening for new connections
         //This will be called everytime it receives a new connection
         //The new connection is added to the list
-        void callback_newConnection(IAsyncResult asyncResult)
+        void Callback_newConnection(IAsyncResult asyncResult)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace ConsolespaceshipsServer
 
                 //Recall this operation again
                 //Forms a loop to continuously listen for connections
-                this.s.BeginAccept(callback_newConnection, null);
+                this.s.BeginAccept(Callback_newConnection, null);
             }
             catch (Exception e)
             {

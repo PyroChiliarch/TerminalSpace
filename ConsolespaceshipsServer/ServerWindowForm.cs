@@ -15,6 +15,10 @@ namespace ConsolespaceshipsServer
 {
     public partial class ServerWindowForm : Form
     {
+        //Structs
+        
+
+
         //Listener for new connections
         Listener listener;
 
@@ -22,6 +26,9 @@ namespace ConsolespaceshipsServer
         //List of logged in players
         //TODO: Is this needed?
         Dictionary<string, Player> playerList;
+
+        //List of sectors
+        
 
 
 
@@ -38,10 +45,12 @@ namespace ConsolespaceshipsServer
             //Setup new connection listener
             listener = new Listener(8);
             //Event for new connections
-            listener.SocketAccepted += new Listener.SocketAcceptedHandler(listener_SocketAccepted);
+            listener.SocketAccepted += new Listener.SocketAcceptedHandler(Listener_SocketAccepted);
 
+            //List of players
             playerList = new Dictionary<string, Player>();
 
+            
 
 
             //Load event for the windows form
@@ -77,6 +86,31 @@ namespace ConsolespaceshipsServer
             player.remoteClient.Send("You have logged in as " + player.name);
         }
 
+        private void Player_PlayerBroadcastEvent(Player player, string action)
+        {
+            string[] command = action.Split(new char[] { ' ' });
+
+            
+            string msg = "";
+            for (int i = 1; i < command.Length; i++)
+            {
+                msg += command[i];
+                msg += " ";
+            }
+
+            string broadcastMsg = "BROADCAST: " + player.name + " : " + msg;
+
+
+            //Sends the broadcast message to every play in the sector that is not itself
+            foreach (KeyValuePair<string, Player> otherPlayer in playerList)
+            {
+                if (player.CurrentSector == otherPlayer.Value.CurrentSector
+                    && player != otherPlayer.Value)
+                {
+                    otherPlayer.Value.remoteClient.Send(broadcastMsg);
+                }
+            }
+        }
 
 
 
@@ -91,18 +125,19 @@ namespace ConsolespaceshipsServer
         //=============================================================================
 
         //Called when a new connection is made
-        private void listener_SocketAccepted(Socket newConnection)
+        private void Listener_SocketAccepted(Socket newConnection)
         {
             //Setup a new client with a the new connection(Socket)
-            Player player = new Player(newConnection);
+            Player player = new Player(newConnection, new SectorCoord { x = 0, y = 0, z = 0});
 
             //Setup remoteClient events
-            player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(client_ReceivedMsg);
-            player.remoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(client_Disconnected);
+            player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
+            player.remoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(Client_Disconnected);
 
             //Setup Player events
             Player.playerActionList["yell"] += Player_PlayerYellEvent;
             Player.playerActionList["login"] += Player_PlayerLoginEvent;
+            Player.playerActionList["broadcast"] += Player_PlayerBroadcastEvent;
 
             //Add the new client to the list in the window
             Invoke((MethodInvoker)delegate
@@ -116,6 +151,8 @@ namespace ConsolespaceshipsServer
                lstClients.Items.Add(i);
             });
         }
+
+        
 
 
 
@@ -131,10 +168,10 @@ namespace ConsolespaceshipsServer
         //=============================================================================
         //Client event delegates
         //=============================================================================
-        
+
         //Called when a client disconnects
         //Removes the client from the list
-        private void client_Disconnected(Client sender)
+        private void Client_Disconnected(Client sender)
         {
             
 
@@ -158,7 +195,7 @@ namespace ConsolespaceshipsServer
         //Called when the remote client sends a message
         //Updates the client info table
         //Makes the client/player do an action if the msg was a command
-        private void client_ReceivedMsg(Client sender, byte[] data)
+        private void Client_ReceivedMsg(Client sender, byte[] data)
         {
             string incomingMsg = Encoding.Default.GetString(data);
 

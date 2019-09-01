@@ -20,12 +20,19 @@ namespace ConsolespaceshipsServer
 
         public Client remoteClient;
 
+        public SectorCoord CurrentSector
+        {
+            get;
+            private set;
+        }
+
         public string name;
 
         //Constructor
-        public Player(Socket newRemoteClient)
+        public Player(Socket newRemoteClient, SectorCoord spawnSector)
         {
             remoteClient = new Client(newRemoteClient);
+            CurrentSector = spawnSector;
 
             //Setup the list of player actions
             //And asign each of them an event
@@ -34,11 +41,15 @@ namespace ConsolespaceshipsServer
                 {"login", PlayerLoginEvent },
                 {"echo", PlayerEchoEvent },
                 {"yell", PlayerYellEvent },
-                {"help", PlayerHelpEvent }
+                {"help", PlayerHelpEvent },
+                {"whereami", PlayerWhereamiEvent },
+                {"broadcast", PlayerBroadcastEvent }
             };
 
             //Subscribe to player actions that will affect the player themselves
-            playerActionList["echo"] += PlayerEcho;
+            playerActionList["echo"] += PlayerActionEcho;
+            playerActionList["help"] += PlayerActionHelp;
+            playerActionList["whereami"] += PlayerActionWhereami;
         }
 
         
@@ -83,14 +94,14 @@ namespace ConsolespaceshipsServer
         //=============================================================================
 
         //Echos back to the player
-        public void PlayerEcho (Player player, string action)
+        private void PlayerActionEcho (Player player, string action)
         {
             Console.WriteLine("Echo");
             remoteClient.Send("Echo");
             
         }
 
-        private void PlayerHelpEvent(Player player, string action)
+        private void PlayerActionHelp (Player player, string action)
         {
             string commandList = ("" +
                 "Help: Show this list\n" +
@@ -99,7 +110,10 @@ namespace ConsolespaceshipsServer
             remoteClient.Send(commandList);
         }
 
-
+        private void PlayerActionWhereami (Player player, string action)
+        {
+            remoteClient.Send("You are in sector: " + CurrentSector.x + "," + CurrentSector.y + "," + CurrentSector.z);
+        }
 
 
 
@@ -115,6 +129,9 @@ namespace ConsolespaceshipsServer
         public event PlayerActionHandler PlayerLoginEvent;
         public event PlayerActionHandler PlayerEchoEvent;
         public event PlayerActionHandler PlayerYellEvent;
+        public event PlayerActionHandler PlayerHelpEvent;
+        public event PlayerActionHandler PlayerWhereamiEvent;
+        public event PlayerActionHandler PlayerBroadcastEvent;
             
     }
 }
