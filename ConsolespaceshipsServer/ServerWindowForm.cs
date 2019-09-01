@@ -65,6 +65,7 @@ namespace ConsolespaceshipsServer
         private void Player_PlayerYellEvent(Player player, string action)
         {
             Console.WriteLine(player.name + " is Yelling!");
+            player.remoteClient.Send("In space, no one can hear you scream!");
         }
 
         private void Player_PlayerLoginEvent(Player player, string action)
@@ -73,6 +74,7 @@ namespace ConsolespaceshipsServer
             player.name = command[1];
             playerList.Add(player.name, player);
             Console.WriteLine("Player Logged in: " + player.name);
+            player.remoteClient.Send("You have logged in as " + player.name);
         }
 
 
@@ -134,6 +136,8 @@ namespace ConsolespaceshipsServer
         //Removes the client from the list
         private void client_Disconnected(Client sender)
         {
+            
+
             //Remove the client that disconnected from the client list
             Invoke((MethodInvoker)delegate
             {

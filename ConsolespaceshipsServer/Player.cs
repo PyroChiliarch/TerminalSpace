@@ -33,12 +33,15 @@ namespace ConsolespaceshipsServer
             {
                 {"login", PlayerLoginEvent },
                 {"echo", PlayerEchoEvent },
-                {"yell", PlayerYellEvent }
+                {"yell", PlayerYellEvent },
+                {"help", PlayerHelpEvent }
             };
 
             //Subscribe to player actions that will affect the player themselves
             playerActionList["echo"] += PlayerEcho;
         }
+
+        
 
 
 
@@ -46,6 +49,11 @@ namespace ConsolespaceshipsServer
         //Returns false if the action is invalid
         public bool DoAction (string action)
         {
+            if (action == "")
+            {
+                return false;
+            }
+
             string[] command = action.Split(new char[] { ' ' });
 
 
@@ -78,10 +86,18 @@ namespace ConsolespaceshipsServer
         public void PlayerEcho (Player player, string action)
         {
             Console.WriteLine("Echo");
+            remoteClient.Send("Echo");
             
         }
 
-
+        private void PlayerHelpEvent(Player player, string action)
+        {
+            string commandList = ("" +
+                "Help: Show this list\n" +
+                "Echo: Get a response from the server\n" +
+                "Yell: Scream into space");
+            remoteClient.Send(commandList);
+        }
 
 
 
@@ -92,6 +108,7 @@ namespace ConsolespaceshipsServer
 
         //=============================================================================
         //Player Action Events
+        //=============================================================================
 
         public delegate void PlayerActionHandler(Player player, string action);
 
