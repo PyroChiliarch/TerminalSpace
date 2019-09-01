@@ -28,6 +28,7 @@ namespace ConsolespaceshipsServer
         Dictionary<string, Player> playerList;
 
         //List of sectors
+        Dictionary<SectorCoord, Sector> sectorList;
         
 
 
@@ -50,6 +51,8 @@ namespace ConsolespaceshipsServer
             //List of players
             playerList = new Dictionary<string, Player>();
 
+            //List of sectores
+            sectorList = new Dictionary<SectorCoord, Sector>();
             
 
 
