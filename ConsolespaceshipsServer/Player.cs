@@ -112,7 +112,7 @@ namespace ConsolespaceshipsServer
 
         private void PlayerActionWhereami (Player player, string action)
         {
-            remoteClient.Send("You are in sector: " + CurrentSector.x + "," + CurrentSector.y + "," + CurrentSector.z);
+            player.remoteClient.Send("You are in sector: " + CurrentSector.x + "," + CurrentSector.y + "," + CurrentSector.z);
         }
 
 
