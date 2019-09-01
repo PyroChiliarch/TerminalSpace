@@ -14,7 +14,7 @@ namespace Consolespaceships
     class Program
     {
 
-        const string version = "v1.0";
+        const string version = "v0.1.0";
 
         static void Main(string[] args)
         {
