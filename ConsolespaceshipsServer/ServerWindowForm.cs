@@ -19,12 +19,10 @@ namespace ConsolespaceshipsServer
         Listener listener;
 
 
-        //List of players
+        //List of logged in players
+        //TODO: Is this needed?
         Dictionary<string, Player> playerList;
 
-        //The player object
-        //TODO: Refactor
-        //Player player;
 
 
 
@@ -42,13 +40,8 @@ namespace ConsolespaceshipsServer
             //Event for new connections
             listener.SocketAccepted += new Listener.SocketAcceptedHandler(listener_SocketAccepted);
 
-            //Initialise our only player
-            //TODO: Refactor Constructor
-            //player = new Player();
+            playerList = new Dictionary<string, Player>();
 
-            //Setup external Player commands
-            //TODO: Refactor Event
-            //Player.playerActionList["yell"] += Player_PlayerYellEvent;
 
 
             //Load event for the windows form
@@ -69,11 +62,18 @@ namespace ConsolespaceshipsServer
         //=============================================================================
         //Player Event Delegates
         //=============================================================================
-        private void Player_PlayerYellEvent(string action)
+        private void Player_PlayerYellEvent(Player player, string action)
         {
-            Console.WriteLine("Player is Yelling!");
+            Console.WriteLine(player.name + " is Yelling!");
         }
 
+        private void Player_PlayerLoginEvent(Player player, string action)
+        {
+            string[] command = action.Split(new char[] { ' ' });
+            player.name = command[1];
+            playerList.Add(player.name, player);
+            Console.WriteLine("Player Logged in: " + player.name);
+        }
 
 
 
@@ -100,7 +100,7 @@ namespace ConsolespaceshipsServer
 
             //Setup Player events
             Player.playerActionList["yell"] += Player_PlayerYellEvent;
-
+            Player.playerActionList["login"] += Player_PlayerLoginEvent;
 
             //Add the new client to the list in the window
             Invoke((MethodInvoker)delegate

@@ -20,8 +20,15 @@ namespace Consolespaceships
 
             //Connect to server
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            //Handle player login
+            Console.WriteLine("Enter Name");
+            string name = Console.ReadLine();
+            Console.WriteLine("Enter Password");
+            string pass = Console.ReadLine();
             socket.Connect("127.0.0.1", 8);
-            
+            socket.Send(Encoding.Default.GetBytes("login " + name + " " + pass));
+
             //Keep sending messages
             while (true)
             {

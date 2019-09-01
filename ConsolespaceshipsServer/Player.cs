@@ -19,7 +19,9 @@ namespace ConsolespaceshipsServer
         public static Dictionary<string, PlayerActionHandler> playerActionList;
 
         public Client remoteClient;
-        
+
+        public string name;
+
         //Constructor
         public Player(Socket newRemoteClient)
         {
@@ -29,6 +31,7 @@ namespace ConsolespaceshipsServer
             //And asign each of them an event
             playerActionList = new Dictionary<string, PlayerActionHandler>()
             {
+                {"login", PlayerLoginEvent },
                 {"echo", PlayerEchoEvent },
                 {"yell", PlayerYellEvent }
             };
@@ -43,12 +46,14 @@ namespace ConsolespaceshipsServer
         //Returns false if the action is invalid
         public bool DoAction (string action)
         {
+            string[] command = action.Split(new char[] { ' ' });
+
 
             //Check to see if it is a command that should be actioned
-            if (playerActionList.ContainsKey(action))
+            if (playerActionList.ContainsKey(command[0]))
             {
 
-                playerActionList[action].Invoke(action);
+                playerActionList[command[0]].Invoke(this, action);
                 return true;
             }
             else
@@ -70,7 +75,7 @@ namespace ConsolespaceshipsServer
         //=============================================================================
 
         //Echos back to the player
-        public void PlayerEcho (string action)
+        public void PlayerEcho (Player player, string action)
         {
             Console.WriteLine("Echo");
             
@@ -88,8 +93,9 @@ namespace ConsolespaceshipsServer
         //=============================================================================
         //Player Action Events
 
-        public delegate void PlayerActionHandler(string action);
+        public delegate void PlayerActionHandler(Player player, string action);
 
+        public event PlayerActionHandler PlayerLoginEvent;
         public event PlayerActionHandler PlayerEchoEvent;
         public event PlayerActionHandler PlayerYellEvent;
             
