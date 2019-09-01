@@ -18,52 +18,55 @@ namespace Consolespaceships
 
         
         Socket socket;
-        //List<string> incomingMsgBuffer;
-
-
 
         public ClientWindowForm()
         {
+            //Creat the Form
             InitializeComponent();
-
-            
-
-            //incomingMsgBuffer = new List<string>();
-
 
             //Initialise Socket
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-            
-            //Connect
+            //Connect with the socket to the server
             socket.Connect("127.0.0.1", 8);
             
+            //Begin Receive Message thread
             socket.BeginReceive(new byte[] { 0 }, 0, 0, 0, MsgReceivedCallback, null);
 
         }
 
 
+
+
+        //=============================================================================
+        //Thread call back loops
+        //=============================================================================
+        //Receive Message Loop
         private void MsgReceivedCallback(IAsyncResult asyncResult)
         {
             try
             {
-                socket.EndReceive(asyncResult);
 
+                //Receive Message
+                //Stop receiveing with the socket so it can be read
+                socket.EndReceive(asyncResult);
                 //Make a storage for the new message
                 byte[] buffer = new byte[8192];
-
                 //Fill buffer with message
                 int msgLength = socket.Receive(buffer, buffer.Length, 0);
-
                 //Resize the buffer if necessary
                 if (msgLength < buffer.Length)
                 {
                     Array.Resize<byte>(ref buffer, msgLength);
                 }
-
+                //Place message in a var for use
                 string incomingMsg = Encoding.Default.GetString(buffer);
 
 
+
+
+
+                //Update the listview for message history
                 Invoke((MethodInvoker)delegate
                 {
                     ListViewItem item = new ListViewItem();
@@ -72,6 +75,11 @@ namespace Consolespaceships
                     item.Tag = null;
                     listMsgHistory.Items.Add(item);
                 });
+
+
+
+
+
 
                 //Begin the thread again and listen for another msg from the connection
                 socket.BeginReceive(new byte[] { 0 }, 0, 0, 0, MsgReceivedCallback, null);

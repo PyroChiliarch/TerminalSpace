@@ -93,7 +93,7 @@
             this.Controls.Add(this.textBoxInput);
             this.Controls.Add(this.btnSend);
             this.Name = "ClientWindowForm";
-            this.Text = "ClientWindowForm";
+            this.Text = "Terminal Space";
             this.ResumeLayout(false);
             this.PerformLayout();
 
