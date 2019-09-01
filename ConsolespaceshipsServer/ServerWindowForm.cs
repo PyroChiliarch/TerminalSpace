@@ -17,10 +17,17 @@ namespace ConsolespaceshipsServer
     {
         //Listener for new connections
         Listener listener;
-        Player player;
-        
 
-        //Constructor, run when form is started
+        
+        //The player object
+        Player player;
+
+
+
+        //=============================================================================
+        //Constructor
+        //run when form is started
+        //=============================================================================
         public ServerWindowForm()
         {
             //Initialise the Form
@@ -35,16 +42,11 @@ namespace ConsolespaceshipsServer
             player = new Player();
 
             //Setup external Player commands
-            Player.commandList["yell"] += Player_PlayerYellEvent;
+            Player.playerActionList["yell"] += Player_PlayerYellEvent;
 
 
             //Load event for the windows form
             Load += new EventHandler(ServerWindowForm_Load);
-        }
-
-        private void Player_PlayerYellEvent(string action)
-        {
-            Console.WriteLine("Player is Yelling!");
         }
 
         private void ServerWindowForm_Load(object sender, EventArgs e)
@@ -52,6 +54,33 @@ namespace ConsolespaceshipsServer
             //Start the listener
             listener.Start();
         }
+
+
+
+
+
+
+        //=============================================================================
+        //Player Event Delegates
+        //=============================================================================
+        private void Player_PlayerYellEvent(string action)
+        {
+            Console.WriteLine("Player is Yelling!");
+        }
+
+
+
+
+
+
+
+
+
+
+
+        //=============================================================================
+        //Listener event delegates
+        //=============================================================================
 
         //Called when a new connection is made
         private void listener_SocketAccepted(Socket newConnection)
@@ -74,6 +103,23 @@ namespace ConsolespaceshipsServer
             });
         }
 
+
+
+
+
+
+
+
+
+
+
+
+        //=============================================================================
+        //Client event delegates
+        //=============================================================================
+        
+        //Called when a client disconnects
+        //Removes the client from the list
         private void client_Disconnected(Client sender)
         {
             //Remove the client that disconnected from the client list
@@ -92,6 +138,10 @@ namespace ConsolespaceshipsServer
             });
         }
 
+
+        //Called when the remote client sends a message
+        //Updates the client info table
+        //Makes the client/player do an action if the msg was a command
         private void client_ReceivedMsg(Client sender, byte[] data)
         {
             string incomingMsg = Encoding.Default.GetString(data);
@@ -112,8 +162,8 @@ namespace ConsolespaceshipsServer
                 }
             });
 
-            player.RunCommand(incomingMsg);
-            
+            //Makes player do an action if the msg was a command
+            player.DoAction(incomingMsg);
         }
 
         
