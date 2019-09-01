@@ -48,7 +48,27 @@ namespace ConsolespaceshipsServer
                 return;
 
             //Binds socket to Endpoint with specified server port
-            s.Bind(new IPEndPoint(0, Port));
+            try
+            {
+                s.Bind(new IPEndPoint(0, Port));
+            }
+            catch (SocketException e) when (e.ErrorCode == 10048)
+            {
+                Console.WriteLine("Error");
+                Console.WriteLine("Socket failed to bind");
+                Console.WriteLine("Are you trying to run multiple servers?");
+                Console.WriteLine("-");
+                Console.WriteLine(e.ErrorCode);
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+                throw e;
+            } catch (Exception e)
+            {
+                throw e;
+            }
+            
+            
+
 
             //Simply sets the state of the socket
             s.Listen(0);
