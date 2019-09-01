@@ -16,7 +16,7 @@ namespace ConsolespaceshipsServer
         //Commands are stored with an event that will be called when the action is made
         //If you want a function to be called when the player does an action,
         //Subscribe it to the event listed in this list.
-        public static Dictionary<string, PlayerActionHandler> playerActionList;
+        public Dictionary<string, PlayerActionHandler> playerActionList;
 
         public Client remoteClient;
 
@@ -43,7 +43,9 @@ namespace ConsolespaceshipsServer
                 {"yell", PlayerYellEvent },
                 {"help", PlayerHelpEvent },
                 {"whereami", PlayerWhereamiEvent },
-                {"broadcast", PlayerBroadcastEvent }
+                {"broadcast", PlayerBroadcastEvent },
+                {"radar", PlayerRadarEvent },
+                {"warpto", PlayerWarptoEvent }
             };
 
             //Subscribe to player actions that will affect the player themselves
@@ -132,6 +134,8 @@ namespace ConsolespaceshipsServer
         public event PlayerActionHandler PlayerHelpEvent;
         public event PlayerActionHandler PlayerWhereamiEvent;
         public event PlayerActionHandler PlayerBroadcastEvent;
+        public event PlayerActionHandler PlayerRadarEvent;
+        public event PlayerActionHandler PlayerWarptoEvent;
             
     }
 }

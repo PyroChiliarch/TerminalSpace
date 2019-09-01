@@ -60,6 +60,7 @@
     <Compile Include="ServerWindowForm.Designer.cs">
       <DependentUpon>ServerWindowForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SpaceObject.cs" />
     <Compile Include="Structs.cs" />
   </ItemGroup>
   <ItemGroup>

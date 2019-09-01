@@ -24,7 +24,7 @@ namespace ConsolespaceshipsServer
 
 
         //List of logged in players
-        //TODO: Is this needed?
+        //TODO : Not implemented properly
         Dictionary<string, Player> playerList;
 
         //List of sectors
@@ -52,8 +52,15 @@ namespace ConsolespaceshipsServer
             playerList = new Dictionary<string, Player>();
 
             //List of sectores
-            sectorList = new Dictionary<SectorCoord, Sector>();
-            
+            //Spawn test object
+            SectorCoord spawnCoord = new SectorCoord() { x = 0, y = 0, z = 0 };
+            sectorList = new Dictionary<SectorCoord, Sector>()
+            {
+                {spawnCoord, new Sector() }
+            };
+            SpaceObject newObject = new SpaceObject();
+            SpaceCoord newPos = new SpaceCoord() { x = 0, y = 0, z = 0 };
+            sectorList[spawnCoord].SpawnSpaceObject(newObject, newPos);
 
 
             //Load event for the windows form
@@ -115,6 +122,17 @@ namespace ConsolespaceshipsServer
             }
         }
 
+        private void Player_PlayerRadarEvent(Player player, string action)
+        {
+            Sector playerSector = sectorList[player.CurrentSector];
+            player.remoteClient.Send("Objects Found: " + playerSector.GetSpaceObjectList().Length.ToString());
+            foreach (string item in playerSector.GetSpaceObjectList())
+            {
+                player.remoteClient.Send(item);
+                player.remoteClient.Send(item);
+            }
+        }
+
 
 
 
@@ -138,9 +156,10 @@ namespace ConsolespaceshipsServer
             player.remoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(Client_Disconnected);
 
             //Setup Player events
-            Player.playerActionList["yell"] += Player_PlayerYellEvent;
-            Player.playerActionList["login"] += Player_PlayerLoginEvent;
-            Player.playerActionList["broadcast"] += Player_PlayerBroadcastEvent;
+            player.playerActionList["yell"] += Player_PlayerYellEvent;
+            player.playerActionList["login"] += Player_PlayerLoginEvent;
+            player.playerActionList["broadcast"] += Player_PlayerBroadcastEvent;
+            player.playerActionList["radar"] += Player_PlayerRadarEvent;
 
             //Add the new client to the list in the window
             Invoke((MethodInvoker)delegate
@@ -156,6 +175,8 @@ namespace ConsolespaceshipsServer
         }
 
         
+
+
 
 
 
