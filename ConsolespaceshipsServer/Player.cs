@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Net;
+using System.Net.Sockets;
+
 namespace ConsolespaceshipsServer
 {
     class Player
@@ -15,11 +18,12 @@ namespace ConsolespaceshipsServer
         //Subscribe it to the event listed in this list.
         public static Dictionary<string, PlayerActionHandler> playerActionList;
 
-
-
+        public Client remoteClient;
+        
         //Constructor
-        public Player()
+        public Player(Socket newRemoteClient)
         {
+            remoteClient = new Client(newRemoteClient);
 
             //Setup the list of player actions
             //And asign each of them an event
@@ -30,7 +34,7 @@ namespace ConsolespaceshipsServer
             };
 
             //Subscribe to player actions that will affect the player themselves
-            PlayerEchoEvent += PlayerEcho;
+            playerActionList["echo"] += PlayerEcho;
         }
 
 

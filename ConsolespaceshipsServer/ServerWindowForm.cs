@@ -18,9 +18,13 @@ namespace ConsolespaceshipsServer
         //Listener for new connections
         Listener listener;
 
-        
+
+        //List of players
+        Dictionary<string, Player> playerList;
+
         //The player object
-        Player player;
+        //TODO: Refactor
+        //Player player;
 
 
 
@@ -39,10 +43,12 @@ namespace ConsolespaceshipsServer
             listener.SocketAccepted += new Listener.SocketAcceptedHandler(listener_SocketAccepted);
 
             //Initialise our only player
-            player = new Player();
+            //TODO: Refactor Constructor
+            //player = new Player();
 
             //Setup external Player commands
-            Player.playerActionList["yell"] += Player_PlayerYellEvent;
+            //TODO: Refactor Event
+            //Player.playerActionList["yell"] += Player_PlayerYellEvent;
 
 
             //Load event for the windows form
@@ -86,19 +92,25 @@ namespace ConsolespaceshipsServer
         private void listener_SocketAccepted(Socket newConnection)
         {
             //Setup a new client with a the new connection(Socket)
-            Client client = new Client(newConnection);
-            client.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(client_ReceivedMsg);
-            client.DisconnectedEvent += new Client.ClientDisconnectedHandler(client_Disconnected);
+            Player player = new Player(newConnection);
+
+            //Setup remoteClient events
+            player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(client_ReceivedMsg);
+            player.remoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(client_Disconnected);
+
+            //Setup Player events
+            Player.playerActionList["yell"] += Player_PlayerYellEvent;
+
 
             //Add the new client to the list in the window
             Invoke((MethodInvoker)delegate
             {
                ListViewItem i = new ListViewItem();
-               i.Text = client.EndPoint.ToString(); //End point = IP + Port
-               i.SubItems.Add(client.ID); //GUID of client
+               i.Text = player.remoteClient.EndPoint.ToString(); //End point = IP + Port
+               i.SubItems.Add(player.remoteClient.ID); //GUID of client
                i.SubItems.Add("xx"); //Last Message
                i.SubItems.Add("xx"); //Last message Time
-               i.Tag = client; //Not sure what it is, but its important
+               i.Tag = player; //The object associated with the table entry
                lstClients.Items.Add(i);
             });
         }
@@ -127,9 +139,9 @@ namespace ConsolespaceshipsServer
             {
                for (int i = 0; i < lstClients.Items.Count; i++)
                {
-                   Client client = lstClients.Items[i].Tag as Client;
+                   Player player = lstClients.Items[i].Tag as Player;
 
-                   if (client.ID == sender.ID)
+                   if (player.remoteClient.ID == sender.ID)
                    {
                        lstClients.Items.RemoveAt(i);
                        break;
@@ -151,19 +163,22 @@ namespace ConsolespaceshipsServer
             {
                 for (int i = 0; i < lstClients.Items.Count; i++)
                 {
-                    Client client = lstClients.Items[i].Tag as Client;
+                    Player player = lstClients.Items[i].Tag as Player;
 
-                    if (client.ID == sender.ID)
+                    if (player.remoteClient.ID == sender.ID)
                     {
+                        //Update the Table
                         lstClients.Items[i].SubItems[2].Text = incomingMsg;
                         lstClients.Items[i].SubItems[3].Text = DateTime.Now.ToString();
+
+                        //Makes player do an action if the msg was a command
+                        player.DoAction(incomingMsg);
                         break;
                     }
                 }
             });
 
-            //Makes player do an action if the msg was a command
-            player.DoAction(incomingMsg);
+            
         }
 
         
