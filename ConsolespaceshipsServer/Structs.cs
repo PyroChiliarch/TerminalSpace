@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsolespaceshipsServer
 {
-
+    //TODO: Remove
     struct SectorCoord
     {
 
@@ -79,13 +79,11 @@ namespace ConsolespaceshipsServer
     }
 
 
-    struct SpaceCoord
+
+    struct Vector3
     {
         public float x;
         public float y;
         public float z;
-
-        
     }
-    
 }

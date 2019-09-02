@@ -18,22 +18,20 @@ namespace ConsolespaceshipsServer
         //Subscribe it to the event listed in this list.
         public Dictionary<string, PlayerActionHandler> playerActionList;
 
+        //TODO: Make Private
         public Client remoteClient;
-
-        //TODO: Store object position as a reference type (Object)
-        public SectorCoord CurrentSector
-        {
-            get;
-            private set;
-        }
 
         public string name;
 
+        //Players postion
+        public Transform Transform;
+
         //Constructor
-        public Player(Socket newRemoteClient, SectorCoord spawnSector)
+        public Player(Socket newRemoteClient, Transform transform)
         {
+            Transform = new Transform();
             remoteClient = new Client(newRemoteClient);
-            CurrentSector = spawnSector;
+            Transform.sector = transform.sector;
 
             //Setup the list of player actions
             //And asign each of them an event
@@ -109,9 +107,9 @@ namespace ConsolespaceshipsServer
         //Returns Success
         public bool WarpTo(SectorCoord sector)
         {
-            if (CurrentSector != sector)
+            if (Transform.sector != sector)
             {
-                CurrentSector = sector;
+                Transform.sector = sector;
                 return true;
             }
 
@@ -166,7 +164,7 @@ namespace ConsolespaceshipsServer
 
         private void PlayerActionWhereami (Player player, string action)
         {
-            SendInfoMsg("You are in sector " + CurrentSector.ToString());
+            SendInfoMsg("You are in sector " + Transform.sector.ToString());
         }
         
 

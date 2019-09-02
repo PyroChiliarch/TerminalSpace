@@ -24,7 +24,7 @@ namespace ConsolespaceshipsServer
 
 
         //List of logged in players
-        //TODO : Not implemented properly
+        //TODO : Change Key to an object/Reference
         Dictionary<string, Player> playerList;
 
         //List of sectors
@@ -59,7 +59,7 @@ namespace ConsolespaceshipsServer
                 {spawnCoord, new Sector() }
             };
             SpaceObject newObject = new SpaceObject();
-            SpaceCoord newPos = new SpaceCoord() { x = 0, y = 0, z = 0 };
+            Vector3 newPos = new Vector3() { x = 0, y = 0, z = 0 };
             sectorList[spawnCoord].SpawnSpaceObject(newObject, newPos);
 
 
@@ -91,7 +91,7 @@ namespace ConsolespaceshipsServer
         private void Listener_SocketAccepted(Socket newConnection)
         {
             //Setup a new client with a the new connection(Socket)
-            Player player = new Player(newConnection, new SectorCoord { x = 0, y = 0, z = 0 });
+            Player player = new Player(newConnection, new Transform());
 
             //Setup remoteClient events
             player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
@@ -173,7 +173,7 @@ namespace ConsolespaceshipsServer
             //Sends the broadcast message to every play in the sector that is not itself
             foreach (KeyValuePair<string, Player> otherPlayer in playerList)
             {
-                if (player.CurrentSector == otherPlayer.Value.CurrentSector
+                if (player.Transform.sector == otherPlayer.Value.Transform.sector
                     && player != otherPlayer.Value)
                 {
                     otherPlayer.Value.SendInfoMsg(broadcastMsg);
@@ -183,7 +183,7 @@ namespace ConsolespaceshipsServer
 
         private void Player_PlayerRadarEvent(Player player, string action)
         {
-            Sector playerSector = sectorList[player.CurrentSector];
+            Sector playerSector = sectorList[player.Transform.sector];
             player.SendInfoMsg("Objects Found: " + playerSector.GetSpaceObjectList().Length.ToString());
             foreach (string item in playerSector.GetSpaceObjectList())
             {
@@ -234,13 +234,13 @@ namespace ConsolespaceshipsServer
             string name = command[1];
 
             //Second arg
-            SpaceCoord spaceCoord;
+            Vector3 spaceCoord;
             string[] parts = command[2].Split(',');
             spaceCoord.x = float.Parse(parts[0]);
             spaceCoord.y = float.Parse(parts[1]);
             spaceCoord.z = float.Parse(parts[2]);
 
-            bool result = sectorList[player.CurrentSector].SpawnSpaceObject(new SpaceObject(name), spaceCoord);
+            bool result = sectorList[player.Transform.sector].SpawnSpaceObject(new SpaceObject(name), spaceCoord);
 
             if (result)
             {
