@@ -47,7 +47,7 @@ namespace Consolespaceships
             try
             {
 
-                //Receive Message
+                //Receive Message Array
                 //Stop receiveing with the socket so it can be read
                 socket.EndReceive(asyncResult);
                 //Make a storage for the new message
@@ -61,20 +61,30 @@ namespace Consolespaceships
                 }
                 //Place message in a var for use
                 string incomingMsg = Encoding.Default.GetString(buffer);
-
-
-
+                //Split commands up and fill a list based on EOF char
+                string[] commands = incomingMsg.Split(';');
 
 
                 //Update the listview for message history
-                Invoke((MethodInvoker)delegate
+
+                foreach (string command in commands)
                 {
-                    ListViewItem item = new ListViewItem();
-                    item.Text = DateTime.Now.ToString();
-                    item.SubItems.Add(incomingMsg);
-                    item.Tag = null;
-                    listMsgHistory.Items.Add(item);
-                });
+                    if (command != "")
+                    {
+                        Invoke((MethodInvoker)delegate
+                        {
+                            ListViewItem item = new ListViewItem();
+                            item.Text = DateTime.Now.ToString();
+                            item.SubItems.Add(command);
+                            item.Tag = null;
+                            listMsgHistory.Items.Add(item);
+                        });
+                    }
+
+                    
+                }
+                
+                
 
 
 

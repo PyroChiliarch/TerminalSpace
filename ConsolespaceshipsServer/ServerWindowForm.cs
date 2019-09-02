@@ -133,6 +133,40 @@ namespace ConsolespaceshipsServer
             }
         }
 
+        private void Player_PlayerWarptoEvent(Player player, string action)
+        {
+            string[] command = action.Split(' ');
+
+            //Generate sector coord from command
+            //Catch errors
+            SectorCoord destination;
+            try
+            {
+                destination = new SectorCoord
+                {
+                    x = int.Parse(command[1]),
+                    y = int.Parse(command[2]),
+                    z = int.Parse(command[3])
+                };
+            }
+            catch
+            {
+                Console.WriteLine("Invalid Warp Command: " + action);
+                player.remoteClient.Send("Invalid Warp Command");
+                return;
+            }
+
+            //Generate the sector  if it dosn't exist
+            if (!sectorList.ContainsKey(destination))
+            {
+                sectorList.Add(destination, new Sector());
+            }
+
+
+            player.WarpTo(destination);
+
+            player.remoteClient.Send("Arrived at " + destination.ToString());
+        }
 
 
 
@@ -160,6 +194,7 @@ namespace ConsolespaceshipsServer
             player.playerActionList["login"] += Player_PlayerLoginEvent;
             player.playerActionList["broadcast"] += Player_PlayerBroadcastEvent;
             player.playerActionList["radar"] += Player_PlayerRadarEvent;
+            player.playerActionList["warpto"] += Player_PlayerWarptoEvent;
 
             //Add the new client to the list in the window
             Invoke((MethodInvoker)delegate
@@ -175,6 +210,8 @@ namespace ConsolespaceshipsServer
         }
 
         
+
+
 
 
 

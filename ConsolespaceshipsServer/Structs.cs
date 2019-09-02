@@ -9,6 +9,21 @@ namespace ConsolespaceshipsServer
 
     struct SectorCoord
     {
+
+        public int x;
+        public int y;
+        public int z;
+
+
+
+
+
+
+
+        //=============================================================================
+        //Logic Operators
+        //=============================================================================
+
         public static bool operator ==(SectorCoord c1, SectorCoord c2)
         {
             return c1.Equals(c2);
@@ -19,12 +34,23 @@ namespace ConsolespaceshipsServer
             return !c1.Equals(c2);
         }
 
-        public int x;
-        public int y;
-        public int z;
 
 
 
+
+
+        //=============================================================================
+        //Overides
+        //=============================================================================
+        //Return the Coordinates in string format
+        public override string ToString()
+        {
+            string str = "" + x + "," + y + "," + z;
+            return str;
+        }
+
+        //Auto generated
+        //Do we really need to define this?
         public override bool Equals(object obj)
         {
             if (!(obj is SectorCoord))
@@ -38,6 +64,8 @@ namespace ConsolespaceshipsServer
                    z == coord.z;
         }
 
+        //Auto Generated
+        //Do we really need to define this?
         public override int GetHashCode()
         {
             var hashCode = 373119288;
@@ -46,6 +74,8 @@ namespace ConsolespaceshipsServer
             hashCode = hashCode * -1521134295 + z.GetHashCode();
             return hashCode;
         }
+
+        
     }
 
 

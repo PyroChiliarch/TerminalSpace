@@ -54,9 +54,28 @@ namespace ConsolespaceshipsServer
             playerActionList["whereami"] += PlayerActionWhereami;
         }
 
-        
 
 
+
+
+
+
+
+
+
+
+
+        //=============================================================================
+        //=============================================================================
+        //Public Methods
+        //=============================================================================
+        //=============================================================================
+
+
+
+
+        //=============================================================================
+        //Methods that affect the player Character
 
         //Causes the player to do an action
         //Returns false if the action is invalid
@@ -84,6 +103,19 @@ namespace ConsolespaceshipsServer
         }
 
 
+        //Warps the player to another sector
+        //Returns Success
+        public bool WarpTo(SectorCoord sector)
+        {
+            if (CurrentSector != sector)
+            {
+                CurrentSector = sector;
+                return true;
+            }
+
+            return false;
+        }
+
 
 
 
@@ -91,7 +123,26 @@ namespace ConsolespaceshipsServer
 
 
         //=============================================================================
-        //Player Action Methods
+        //Methods that affect the client
+
+
+        public void SendInfoMsg(string msg)
+        {
+            remoteClient.Send("INFO: " + msg);
+        }
+
+        public void SendSysMsg(string msg)
+        {
+            remoteClient.Send("SYS :" + msg);
+        }
+
+
+
+
+
+
+        //=============================================================================
+        //Player Action Methods, (Event Subscribers)
         //These need to be subscribed to the events in player action list to do anything
         //=============================================================================
 
@@ -114,8 +165,13 @@ namespace ConsolespaceshipsServer
 
         private void PlayerActionWhereami (Player player, string action)
         {
-            player.remoteClient.Send("You are in sector: " + CurrentSector.x + "," + CurrentSector.y + "," + CurrentSector.z);
+            player.remoteClient.Send("You are in sector: " + CurrentSector.ToString());
         }
+        
+
+
+
+
 
 
 

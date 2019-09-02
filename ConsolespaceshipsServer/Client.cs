@@ -94,10 +94,9 @@ namespace ConsolespaceshipsServer
         //Sends a string to the client
         public void Send(string msg)
         {
-            //TODO: Implement EOF to prevent race conditions
-            //Need to update client to read eof to realise its a seperate message
-            //Symptom, Rapid msgs all appear as one message, not multiple
-            socket.Send(Encoding.Default.GetBytes(msg));
+            char eofChar = ';';
+
+            socket.Send(Encoding.Default.GetBytes(msg + eofChar));
         }
 
         //Triggers when the remote client sends a message
