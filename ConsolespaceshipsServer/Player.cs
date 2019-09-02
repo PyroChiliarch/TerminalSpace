@@ -128,14 +128,13 @@ namespace ConsolespaceshipsServer
 
         public void SendInfoMsg(string msg)
         {
-            remoteClient.Send("INFO: " + msg);
+            remoteClient.Send("INFO:" + msg);
         }
 
         public void SendSysMsg(string msg)
         {
-            remoteClient.Send("SYS :" + msg);
+            remoteClient.Send("SYS:" + msg);
         }
-
 
 
 
@@ -150,7 +149,7 @@ namespace ConsolespaceshipsServer
         private void PlayerActionEcho (Player player, string action)
         {
             Console.WriteLine("Echo");
-            remoteClient.Send("Echo");
+            SendSysMsg("Echo");
             
         }
 
@@ -160,12 +159,12 @@ namespace ConsolespaceshipsServer
                 "Help: Show this list\n" +
                 "Echo: Get a response from the server\n" +
                 "Yell: Scream into space");
-            remoteClient.Send(commandList);
+            SendSysMsg(commandList);
         }
 
         private void PlayerActionWhereami (Player player, string action)
         {
-            player.remoteClient.Send("You are in sector: " + CurrentSector.ToString());
+            SendInfoMsg("You are in sector " + CurrentSector.ToString());
         }
         
 

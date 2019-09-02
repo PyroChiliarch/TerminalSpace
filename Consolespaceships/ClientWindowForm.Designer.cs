@@ -33,6 +33,7 @@
             this.listMsgHistory = new System.Windows.Forms.ListView();
             this.colTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colMessage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colMessageType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // btnSend
@@ -62,6 +63,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listMsgHistory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colTime,
+            this.colMessageType,
             this.colMessage});
             this.listMsgHistory.GridLines = true;
             this.listMsgHistory.HoverSelection = true;
@@ -76,12 +78,17 @@
             // colTime
             // 
             this.colTime.Text = "Time";
-            this.colTime.Width = 150;
+            this.colTime.Width = 113;
             // 
             // colMessage
             // 
             this.colMessage.Text = "Message";
             this.colMessage.Width = 1000;
+            // 
+            // colMessageType
+            // 
+            this.colMessageType.Text = "Type";
+            this.colMessageType.Width = 44;
             // 
             // ClientWindowForm
             // 
@@ -106,5 +113,6 @@
         private System.Windows.Forms.ListView listMsgHistory;
         private System.Windows.Forms.ColumnHeader colTime;
         private System.Windows.Forms.ColumnHeader colMessage;
+        private System.Windows.Forms.ColumnHeader colMessageType;
     }
 }

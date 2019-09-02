@@ -84,7 +84,7 @@ namespace ConsolespaceshipsServer
         private void Player_PlayerYellEvent(Player player, string action)
         {
             Console.WriteLine(player.name + " is Yelling!");
-            player.remoteClient.Send("In space, no one can hear you scream!");
+            player.SendInfoMsg("In space, no one can hear you scream!");
         }
 
         private void Player_PlayerLoginEvent(Player player, string action)
@@ -93,7 +93,7 @@ namespace ConsolespaceshipsServer
             player.name = command[1];
             playerList.Add(player.name, player);
             Console.WriteLine("Player Logged in: " + player.name);
-            player.remoteClient.Send("You have logged in as " + player.name);
+            player.SendSysMsg("You have logged in as " + player.name);
         }
 
         private void Player_PlayerBroadcastEvent(Player player, string action)
@@ -108,7 +108,7 @@ namespace ConsolespaceshipsServer
                 msg += " ";
             }
 
-            string broadcastMsg = "BROADCAST: " + player.name + " : " + msg;
+            string broadcastMsg = player.name + "-" + msg;
 
 
             //Sends the broadcast message to every play in the sector that is not itself
@@ -117,7 +117,7 @@ namespace ConsolespaceshipsServer
                 if (player.CurrentSector == otherPlayer.Value.CurrentSector
                     && player != otherPlayer.Value)
                 {
-                    otherPlayer.Value.remoteClient.Send(broadcastMsg);
+                    otherPlayer.Value.SendInfoMsg(broadcastMsg);
                 }
             }
         }
@@ -125,11 +125,11 @@ namespace ConsolespaceshipsServer
         private void Player_PlayerRadarEvent(Player player, string action)
         {
             Sector playerSector = sectorList[player.CurrentSector];
-            player.remoteClient.Send("Objects Found: " + playerSector.GetSpaceObjectList().Length.ToString());
+            player.SendInfoMsg("Objects Found: " + playerSector.GetSpaceObjectList().Length.ToString());
             foreach (string item in playerSector.GetSpaceObjectList())
             {
-                player.remoteClient.Send(item);
-                player.remoteClient.Send(item);
+                player.SendInfoMsg(item);
+                player.SendInfoMsg(item);
             }
         }
 
@@ -152,7 +152,7 @@ namespace ConsolespaceshipsServer
             catch
             {
                 Console.WriteLine("Invalid Warp Command: " + action);
-                player.remoteClient.Send("Invalid Warp Command");
+                player.SendInfoMsg("Invalid Warp Command");
                 return;
             }
 
@@ -165,7 +165,7 @@ namespace ConsolespaceshipsServer
 
             player.WarpTo(destination);
 
-            player.remoteClient.Send("Arrived at " + destination.ToString());
+            player.SendInfoMsg("Arrived at " + destination.ToString());
         }
 
 

@@ -62,20 +62,23 @@ namespace Consolespaceships
                 //Place message in a var for use
                 string incomingMsg = Encoding.Default.GetString(buffer);
                 //Split commands up and fill a list based on EOF char
-                string[] commands = incomingMsg.Split(';');
+                string[] incomingMsgs = incomingMsg.Split(';');
 
 
                 //Update the listview for message history
 
-                foreach (string command in commands)
+                foreach (string msg in incomingMsgs)
                 {
-                    if (command != "")
+                    if (msg != "")
                     {
+                        string[] msgSplit = msg.Split(':');
+
                         Invoke((MethodInvoker)delegate
                         {
                             ListViewItem item = new ListViewItem();
                             item.Text = DateTime.Now.ToString();
-                            item.SubItems.Add(command);
+                            item.SubItems.Add(msgSplit[0]);
+                            item.SubItems.Add(msgSplit[1]);
                             item.Tag = null;
                             listMsgHistory.Items.Add(item);
                         });
