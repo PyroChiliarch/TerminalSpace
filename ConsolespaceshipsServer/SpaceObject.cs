@@ -38,5 +38,12 @@ namespace ConsolespaceshipsServer
             MaxHealth = 100;
             Health = MaxHealth;
         }
+
+        public SpaceObject(string name)
+        {
+            Name = name;
+            MaxHealth = 100;
+            Health = MaxHealth;
+        }
     }
 }

@@ -20,6 +20,7 @@ namespace ConsolespaceshipsServer
 
         public Client remoteClient;
 
+        //TODO: Store object position as a reference type (Object)
         public SectorCoord CurrentSector
         {
             get;
@@ -45,7 +46,8 @@ namespace ConsolespaceshipsServer
                 {"whereami", PlayerWhereamiEvent },
                 {"broadcast", PlayerBroadcastEvent },
                 {"radar", PlayerRadarEvent },
-                {"warpto", PlayerWarptoEvent }
+                {"warpto", PlayerWarptoEvent },
+                {"create", PlayerCreateEvent }
             };
 
             //Subscribe to player actions that will affect the player themselves
@@ -191,6 +193,7 @@ namespace ConsolespaceshipsServer
         public event PlayerActionHandler PlayerBroadcastEvent;
         public event PlayerActionHandler PlayerRadarEvent;
         public event PlayerActionHandler PlayerWarptoEvent;
+        public event PlayerActionHandler PlayerCreateEvent;
             
     }
 }

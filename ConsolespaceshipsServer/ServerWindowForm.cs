@@ -78,6 +78,65 @@ namespace ConsolespaceshipsServer
 
 
 
+
+
+
+
+        //=============================================================================
+        //Listener event delegates
+        //=============================================================================
+
+        //Called when a new connection is made
+        //Setups player objects
+        private void Listener_SocketAccepted(Socket newConnection)
+        {
+            //Setup a new client with a the new connection(Socket)
+            Player player = new Player(newConnection, new SectorCoord { x = 0, y = 0, z = 0 });
+
+            //Setup remoteClient events
+            player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
+            player.remoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(Client_Disconnected);
+
+            //Setup Player events
+            player.playerActionList["yell"] += Player_PlayerYellEvent;
+            player.playerActionList["login"] += Player_PlayerLoginEvent;
+            player.playerActionList["broadcast"] += Player_PlayerBroadcastEvent;
+            player.playerActionList["radar"] += Player_PlayerRadarEvent;
+            player.playerActionList["warpto"] += Player_PlayerWarptoEvent;
+            player.playerActionList["create"] += Player_PlayerCreateEvent;
+
+            //Add the new client to the list in the window
+            Invoke((MethodInvoker)delegate
+            {
+                ListViewItem i = new ListViewItem();
+                i.Text = player.remoteClient.EndPoint.ToString(); //End point = IP + Port
+                i.SubItems.Add(player.remoteClient.ID); //GUID of client
+                i.SubItems.Add("xx"); //Last Message
+                i.SubItems.Add("xx"); //Last message Time
+                i.Tag = player; //The object associated with the table entry
+                lstClients.Items.Add(i);
+            });
+        }
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         //=============================================================================
         //Player Event Delegates
         //=============================================================================
@@ -129,7 +188,6 @@ namespace ConsolespaceshipsServer
             foreach (string item in playerSector.GetSpaceObjectList())
             {
                 player.SendInfoMsg(item);
-                player.SendInfoMsg(item);
             }
         }
 
@@ -168,48 +226,43 @@ namespace ConsolespaceshipsServer
             player.SendInfoMsg("Arrived at " + destination.ToString());
         }
 
-
-
-
-
-
-
-
-        //=============================================================================
-        //Listener event delegates
-        //=============================================================================
-
-        //Called when a new connection is made
-        private void Listener_SocketAccepted(Socket newConnection)
+        private void Player_PlayerCreateEvent(Player player, string action)
         {
-            //Setup a new client with a the new connection(Socket)
-            Player player = new Player(newConnection, new SectorCoord { x = 0, y = 0, z = 0});
+            string[] command = action.Split(' ');
 
-            //Setup remoteClient events
-            player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
-            player.remoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(Client_Disconnected);
+            //first arg
+            string name = command[1];
 
-            //Setup Player events
-            player.playerActionList["yell"] += Player_PlayerYellEvent;
-            player.playerActionList["login"] += Player_PlayerLoginEvent;
-            player.playerActionList["broadcast"] += Player_PlayerBroadcastEvent;
-            player.playerActionList["radar"] += Player_PlayerRadarEvent;
-            player.playerActionList["warpto"] += Player_PlayerWarptoEvent;
+            //Second arg
+            SpaceCoord spaceCoord;
+            string[] parts = command[2].Split(',');
+            spaceCoord.x = float.Parse(parts[0]);
+            spaceCoord.y = float.Parse(parts[1]);
+            spaceCoord.z = float.Parse(parts[2]);
 
-            //Add the new client to the list in the window
-            Invoke((MethodInvoker)delegate
+            bool result = sectorList[player.CurrentSector].SpawnSpaceObject(new SpaceObject(name), spaceCoord);
+
+            if (result)
             {
-               ListViewItem i = new ListViewItem();
-               i.Text = player.remoteClient.EndPoint.ToString(); //End point = IP + Port
-               i.SubItems.Add(player.remoteClient.ID); //GUID of client
-               i.SubItems.Add("xx"); //Last Message
-               i.SubItems.Add("xx"); //Last message Time
-               i.Tag = player; //The object associated with the table entry
-               lstClients.Items.Add(i);
-            });
+                player.SendInfoMsg("Object Created");
+            }
+            else
+            {
+                player.SendInfoMsg("Creation Failed");
+            }
+
+
+
         }
 
-        
+
+
+
+
+
+
+
+
 
 
 
