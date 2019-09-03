@@ -7,76 +7,7 @@ using System.Threading.Tasks;
 namespace ConsolespaceshipsServer
 {
     //TODO: Remove
-    struct SectorCoord
-    {
-
-        public int x;
-        public int y;
-        public int z;
-
-
-
-
-
-
-
-        //=============================================================================
-        //Logic Operators
-        //=============================================================================
-
-        public static bool operator ==(SectorCoord c1, SectorCoord c2)
-        {
-            return c1.Equals(c2);
-        }
-
-        public static bool operator !=(SectorCoord c1, SectorCoord c2)
-        {
-            return !c1.Equals(c2);
-        }
-
-
-
-
-
-
-        //=============================================================================
-        //Overides
-        //=============================================================================
-        //Return the Coordinates in string format
-        public override string ToString()
-        {
-            string str = "" + x + "," + y + "," + z;
-            return str;
-        }
-
-        //Auto generated
-        //Do we really need to define this?
-        public override bool Equals(object obj)
-        {
-            if (!(obj is SectorCoord))
-            {
-                return false;
-            }
-
-            var coord = (SectorCoord)obj;
-            return x == coord.x &&
-                   y == coord.y &&
-                   z == coord.z;
-        }
-
-        //Auto Generated
-        //Do we really need to define this?
-        public override int GetHashCode()
-        {
-            var hashCode = 373119288;
-            hashCode = hashCode * -1521134295 + x.GetHashCode();
-            hashCode = hashCode * -1521134295 + y.GetHashCode();
-            hashCode = hashCode * -1521134295 + z.GetHashCode();
-            return hashCode;
-        }
-
-        
-    }
+    
 
 
 
@@ -85,5 +16,69 @@ namespace ConsolespaceshipsServer
         public float x;
         public float y;
         public float z;
+
+        public Vector3 (float _x, float _y, float _z)
+        {
+            x = _x;
+            y = _y;
+            z = _z;
+        }
+
+        
+
+    }
+
+    public struct Vector3Int
+    {
+        public int x;
+        public int y;
+        public int z;
+
+
+        public Vector3Int (int _x, int _y, int _z)
+        {
+            x = _x;
+            y = _y;
+            z = _z;
+        }
+
+        public static bool operator ==(Vector3Int c1, Vector3Int c2)
+        {
+            return c1.Equals(c2);
+        }
+
+        public static bool operator !=(Vector3Int c1, Vector3Int c2)
+        {
+            return c1.Equals(c2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Vector3Int))
+            {
+                return false;
+            }
+
+            var vec = (Vector3Int)obj;
+            return x == vec.x &&
+                   y == vec.y &&
+                   z == vec.z;
+        }
+
+
+        public override string ToString()
+        {
+            string str = "" + x + "," + y + "," + z;
+            return str;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 373119288;
+            hashCode = hashCode * -1521134295 + x.GetHashCode();
+            hashCode = hashCode * -1521134295 + y.GetHashCode();
+            hashCode = hashCode * -1521134295 + z.GetHashCode();
+            return hashCode;
+        }
     }
 }

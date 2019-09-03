@@ -8,31 +8,34 @@ namespace ConsolespaceshipsServer
 {
     public class Sector
     {
-        private Dictionary<Vector3, SpaceObject> spaceObjectList;
+        private Dictionary<Transform, SpaceObject> spaceObjectList;
+        public SectorTransform SectorTransform;
 
 
-
-        public Sector ()
+        public Sector (SectorTransform newPos)
         {
 
-            spaceObjectList = new Dictionary<Vector3, SpaceObject>();
+            spaceObjectList = new Dictionary<Transform, SpaceObject>();
+
+            SectorTransform = newPos;
         }
         
         public string[] GetSpaceObjectList ()
         {
             List<string> list = new List<string>();
-            foreach (KeyValuePair<Vector3, SpaceObject> spaceObject in spaceObjectList)
+            foreach (KeyValuePair<Transform, SpaceObject> spaceObject in spaceObjectList)
             {
                 list.Add(spaceObject.Value.Name);
             }
             return list.ToArray();
         }
 
-        internal bool SpawnSpaceObject(SpaceObject newObject, Vector3 pos)
+        internal bool SpawnSpaceObject(SpaceObject newObject, Transform pos)
         {
 
             if (!spaceObjectList.ContainsKey(pos))
             {
+                newObject.Transform = pos;
                 spaceObjectList.Add(pos, newObject);
                 return true;
             } else

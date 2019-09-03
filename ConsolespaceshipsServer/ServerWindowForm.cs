@@ -28,7 +28,7 @@ namespace ConsolespaceshipsServer
         Dictionary<string, Player> playerList;
 
         //List of sectors
-        Dictionary<SectorCoord, Sector> sectorList;
+        Dictionary<SectorTransform, Sector> sectorList;
         
 
 
@@ -51,16 +51,20 @@ namespace ConsolespaceshipsServer
             //List of players
             playerList = new Dictionary<string, Player>();
 
-            //List of sectores
+
+
+            //List of sectors
+            //Spawn test sector
             //Spawn test object
-            SectorCoord spawnCoord = new SectorCoord() { x = 0, y = 0, z = 0 };
-            sectorList = new Dictionary<SectorCoord, Sector>()
-            {
-                {spawnCoord, new Sector() }
-            };
+            sectorList = new Dictionary<SectorTransform, Sector>();
+
+            SectorTransform spawnSector = new SectorTransform(0, 0, 0);
+            Transform newPos = new Transform();
             SpaceObject newObject = new SpaceObject();
-            Vector3 newPos = new Vector3() { x = 0, y = 0, z = 0 };
-            sectorList[spawnCoord].SpawnSpaceObject(newObject, newPos);
+            sectorList.Add(spawnSector, new Sector(spawnSector));
+            sectorList[spawnSector].SpawnSpaceObject(newObject, newPos);
+
+
 
 
             //Load event for the windows form
@@ -91,7 +95,7 @@ namespace ConsolespaceshipsServer
         private void Listener_SocketAccepted(Socket newConnection)
         {
             //Setup a new client with a the new connection(Socket)
-            Player player = new Player(newConnection, new Transform());
+            Player player = new Player(newConnection, new SectorTransform(), new Transform());
 
             //Setup remoteClient events
             player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
@@ -146,13 +150,27 @@ namespace ConsolespaceshipsServer
             player.SendInfoMsg("In space, no one can hear you scream!");
         }
 
+        //Spawns the player and adds them to the active player list
         private void Player_PlayerLoginEvent(Player player, string action)
         {
             string[] command = action.Split(new char[] { ' ' });
+
+            //Add player to active player list
             player.name = command[1];
             playerList.Add(player.name, player);
             Console.WriteLine("Player Logged in: " + player.name);
             player.SendSysMsg("You have logged in as " + player.name);
+
+            //Set the players sector
+            SectorTransform newSector = new SectorTransform(0, 0, 0);
+            if (!sectorList.ContainsKey(newSector))
+            {
+                //Make sure the sector exists
+                sectorList.Add(newSector, new Sector(newSector));
+                Console.WriteLine("New Sector Created: " + newSector.ToString());
+            }
+            player.SectorTransform = newSector;
+            player.SendInfoMsg("You are entering sector " + newSector.ToString());
         }
 
         private void Player_PlayerBroadcastEvent(Player player, string action)
@@ -173,7 +191,7 @@ namespace ConsolespaceshipsServer
             //Sends the broadcast message to every play in the sector that is not itself
             foreach (KeyValuePair<string, Player> otherPlayer in playerList)
             {
-                if (player.Transform.sector == otherPlayer.Value.Transform.sector
+                if (player.SectorTransform == otherPlayer.Value.SectorTransform
                     && player != otherPlayer.Value)
                 {
                     otherPlayer.Value.SendInfoMsg(broadcastMsg);
@@ -183,7 +201,13 @@ namespace ConsolespaceshipsServer
 
         private void Player_PlayerRadarEvent(Player player, string action)
         {
-            Sector playerSector = sectorList[player.Transform.sector];
+            if (!sectorList.ContainsKey(player.SectorTransform))
+            {
+                player.SendInfoMsg("You do not exist in your current sector: " + player.SectorTransform);
+                return;
+            }
+
+            Sector playerSector = sectorList[player.SectorTransform];
             player.SendInfoMsg("Objects Found: " + playerSector.GetSpaceObjectList().Length.ToString());
             foreach (string item in playerSector.GetSpaceObjectList())
             {
@@ -197,15 +221,15 @@ namespace ConsolespaceshipsServer
 
             //Generate sector coord from command
             //Catch errors
-            SectorCoord destination;
+            SectorTransform destination;
             try
             {
-                destination = new SectorCoord
-                {
-                    x = int.Parse(command[1]),
-                    y = int.Parse(command[2]),
-                    z = int.Parse(command[3])
-                };
+                destination = new SectorTransform
+                (
+                    int.Parse(command[1]), //x
+                    int.Parse(command[2]), //y
+                    int.Parse(command[3])  //z
+                );
             }
             catch
             {
@@ -217,7 +241,7 @@ namespace ConsolespaceshipsServer
             //Generate the sector  if it dosn't exist
             if (!sectorList.ContainsKey(destination))
             {
-                sectorList.Add(destination, new Sector());
+                sectorList.Add(destination, new Sector(destination));
             }
 
 
@@ -234,13 +258,13 @@ namespace ConsolespaceshipsServer
             string name = command[1];
 
             //Second arg
-            Vector3 spaceCoord;
+            Transform spaceCoord = new Transform();
             string[] parts = command[2].Split(',');
-            spaceCoord.x = float.Parse(parts[0]);
-            spaceCoord.y = float.Parse(parts[1]);
-            spaceCoord.z = float.Parse(parts[2]);
+            spaceCoord.position.x = float.Parse(parts[0]);
+            spaceCoord.position.y = float.Parse(parts[1]);
+            spaceCoord.position.z = float.Parse(parts[2]);
 
-            bool result = sectorList[player.Transform.sector].SpawnSpaceObject(new SpaceObject(name), spaceCoord);
+            bool result = sectorList[player.SectorTransform].SpawnSpaceObject(new SpaceObject(name), spaceCoord);
 
             if (result)
             {

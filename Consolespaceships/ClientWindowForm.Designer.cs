@@ -32,8 +32,8 @@
             this.textBoxInput = new System.Windows.Forms.TextBox();
             this.listMsgHistory = new System.Windows.Forms.ListView();
             this.colTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colMessage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colMessageType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colMessage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // btnSend
@@ -54,6 +54,7 @@
             this.textBoxInput.Name = "textBoxInput";
             this.textBoxInput.Size = new System.Drawing.Size(235, 20);
             this.textBoxInput.TabIndex = 1;
+            this.textBoxInput.Text = "login PyroChiliarch password1";
             // 
             // listMsgHistory
             // 
@@ -80,15 +81,15 @@
             this.colTime.Text = "Time";
             this.colTime.Width = 113;
             // 
-            // colMessage
-            // 
-            this.colMessage.Text = "Message";
-            this.colMessage.Width = 1000;
-            // 
             // colMessageType
             // 
             this.colMessageType.Text = "Type";
             this.colMessageType.Width = 44;
+            // 
+            // colMessage
+            // 
+            this.colMessage.Text = "Message";
+            this.colMessage.Width = 1000;
             // 
             // ClientWindowForm
             // 

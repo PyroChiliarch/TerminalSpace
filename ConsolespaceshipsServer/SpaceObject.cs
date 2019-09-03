@@ -9,7 +9,7 @@ namespace ConsolespaceshipsServer
     class SpaceObject
     {
 
-        
+        public Transform Transform;
 
         public string Name
         {
@@ -37,6 +37,7 @@ namespace ConsolespaceshipsServer
             Name = "testItem";
             MaxHealth = 100;
             Health = MaxHealth;
+            Transform = null;
         }
 
         public SpaceObject(string name)
