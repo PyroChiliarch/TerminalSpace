@@ -28,7 +28,7 @@ namespace ConsolespaceshipsServer
 
         //Players Galactic Position
         //TODO: Change to just be a Sector object reference
-        public SectorTransform SectorTransform;
+        public Sector Sector;
 
 
 
@@ -44,13 +44,12 @@ namespace ConsolespaceshipsServer
         //Constructor
         //=============================================================================
 
-        public Player(Socket newRemoteClient, SectorTransform sector, Transform pos)
+        public Player(Socket newRemoteClient, Sector sector, Transform pos)
         {
             Transform = new Transform();
-            SectorTransform = new SectorTransform();
+            Sector = sector;
             remoteClient = new Client(newRemoteClient);
             Transform = pos;
-            SectorTransform = sector;
 
 
             //Setup the list of player actions
@@ -125,13 +124,13 @@ namespace ConsolespaceshipsServer
 
         //Warps the player to another sector
         //Returns Success
-        public bool WarpTo(SectorTransform sector)
+        public bool WarpTo(Sector newSector)
         {
 
 
-            if (SectorTransform != sector)
+            if (Sector != newSector)
             {
-                SectorTransform = sector;
+                Sector = newSector;
                 
                 return true;
             }
@@ -193,7 +192,7 @@ namespace ConsolespaceshipsServer
 
         private void PlayerActionWhereami (Player player, string action)
         {
-            SendInfoMsg("You are in sector " + SectorTransform.position.ToString());
+            SendInfoMsg("You are in sector " + Sector.ToString());
         }
         
 

@@ -96,7 +96,7 @@ namespace ConsolespaceshipsServer
         private void Listener_SocketAccepted(Socket newConnection)
         {
             //Setup a new client with a the new connection(Socket)
-            Player player = new Player(newConnection, new SectorTransform(), new Transform());
+            Player player = new Player(newConnection, null, new Transform());
 
             //Setup remoteClient events
             player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
@@ -163,10 +163,10 @@ namespace ConsolespaceshipsServer
             player.SendSysMsg("You have logged in as " + player.name);
 
             //Set the players sector
-            SectorTransform sector = new SectorTransform(0, 0, 0);
-            player.SectorTransform = galaxy.GetSector(sector).SectorTransform;
+            SectorTransform sectorPos = new SectorTransform(0, 0, 0);
+            player.Sector = galaxy.GetSector(sectorPos);
 
-            player.SendInfoMsg("You are entering sector " + sector.ToString());
+            player.SendInfoMsg("You are entering sector " + sectorPos.ToString());
         }
 
         private void Player_PlayerBroadcastEvent(Player player, string action)
@@ -184,10 +184,10 @@ namespace ConsolespaceshipsServer
             string broadcastMsg = player.name + "-" + msg;
 
 
-            //Sends the broadcast message to every play in the sector that is not itself
+            //Sends the broadcast message to every player in the sector that is not itself
             foreach (KeyValuePair<string, Player> otherPlayer in playerList)
             {
-                if (player.SectorTransform == otherPlayer.Value.SectorTransform
+                if (player.Sector == otherPlayer.Value.Sector
                     && player != otherPlayer.Value)
                 {
                     otherPlayer.Value.SendInfoMsg(broadcastMsg);
@@ -198,8 +198,8 @@ namespace ConsolespaceshipsServer
         private void Player_PlayerRadarEvent(Player player, string action)
         {
 
-            string[] objectList = galaxy.GetSector(player.SectorTransform).GetSpaceObjectList();
-            player.SendInfoMsg("Sending radar ping in: " + player.SectorTransform.ToString());
+            string[] objectList = player.Sector.GetSpaceObjectList();
+            player.SendInfoMsg("Sending radar ping in: " + player.Sector.ToString());
             player.SendInfoMsg("Objects Found: " + objectList.Length.ToString());
             foreach (string item in objectList)
             {
@@ -231,7 +231,7 @@ namespace ConsolespaceshipsServer
             }
 
 
-            player.WarpTo(destination);
+            player.WarpTo(galaxy.GetSector(destination));
 
             player.SendInfoMsg("Arrived at " + destination.ToString());
         }
@@ -250,7 +250,7 @@ namespace ConsolespaceshipsServer
             pos.position.y = float.Parse(parts[1]);
             pos.position.z = float.Parse(parts[2]);
 
-            bool result = galaxy.GetSector(player.SectorTransform).SpawnSpaceObject(new SpaceObject(name), pos);
+            bool result = galaxy.GetSector(player.Sector.SectorTransform).SpawnSpaceObject(new SpaceObject(name), pos);
 
             if (result)
             {

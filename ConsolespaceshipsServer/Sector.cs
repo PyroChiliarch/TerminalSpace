@@ -117,6 +117,11 @@ namespace ConsolespaceshipsServer
             return SectorTransform == sec.SectorTransform;
         }
 
+        public override string ToString()
+        {
+            return SectorTransform.ToString();
+        }
+
         public override int GetHashCode()
         {
             var hashCode = -633811817;

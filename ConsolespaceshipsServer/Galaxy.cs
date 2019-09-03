@@ -15,7 +15,6 @@ namespace ConsolespaceshipsServer
         //All sectors exist, but are not spawned and stored until they are needed
         //Once they are spawned they are stored in sectorList
         //For this reason, methods that create of delete sectors are private
-        //TODO: Check to make sure these are double up
         private Dictionary<SectorTransform, Sector> sectorList;
 
         public Galaxy()
