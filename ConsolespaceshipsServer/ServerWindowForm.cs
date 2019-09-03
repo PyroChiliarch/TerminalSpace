@@ -52,17 +52,11 @@ namespace ConsolespaceshipsServer
 
             //The Galaxy
             galaxy = new Galaxy();
-
-            //List of sectors
-            //Spawn test sector
-            //Spawn test object
             
 
             SectorTransform spawnSector = new SectorTransform(0, 0, 0);
             Transform newPos = new Transform();
             SpaceObject newObject = new SpaceObject();
-            //sectorList.Add(spawnSector, new Sector(spawnSector));
-            galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject, newPos);
             galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject, newPos);
 
 
