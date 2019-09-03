@@ -27,10 +27,13 @@ namespace ConsolespaceshipsServer
         public Transform Transform;
 
         //Players Galactic Position
-        //TODO: Change to just be a Sector object reference
         public Sector Sector;
 
-
+        public Guid PlayerID
+        {
+            get;
+            private set;
+        }
 
 
 
@@ -44,13 +47,13 @@ namespace ConsolespaceshipsServer
         //Constructor
         //=============================================================================
 
-        public Player(Socket newRemoteClient, Sector sector, Transform pos)
+        public Player(Socket newRemoteClient, Sector sector, Transform pos, Guid newPlayerID)
         {
             Transform = new Transform();
             Sector = sector;
             remoteClient = new Client(newRemoteClient);
             Transform = pos;
-
+            PlayerID = newPlayerID;
 
             //Setup the list of player actions
             //And asign each of them an event

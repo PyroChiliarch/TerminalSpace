@@ -24,8 +24,7 @@ namespace ConsolespaceshipsServer
 
 
         //List of logged in players
-        //TODO : Change Key to an object/Reference
-        Dictionary<string, Player> playerList;
+        Dictionary<Guid, Player> playerList;
 
         //Galaxy
         Galaxy galaxy;
@@ -49,7 +48,7 @@ namespace ConsolespaceshipsServer
             listener.SocketAccepted += new Listener.SocketAcceptedHandler(Listener_SocketAccepted);
 
             //List of players
-            playerList = new Dictionary<string, Player>();
+            playerList = new Dictionary<Guid, Player>();
 
             //The Galaxy
             galaxy = new Galaxy();
@@ -96,7 +95,7 @@ namespace ConsolespaceshipsServer
         private void Listener_SocketAccepted(Socket newConnection)
         {
             //Setup a new client with a the new connection(Socket)
-            Player player = new Player(newConnection, null, new Transform());
+            Player player = new Player(newConnection, null, new Transform(), Guid.NewGuid());
 
             //Setup remoteClient events
             player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
@@ -158,7 +157,7 @@ namespace ConsolespaceshipsServer
 
             //Add player to active player list
             player.name = command[1];
-            playerList.Add(player.name, player);
+            playerList.Add(player.PlayerID, player);
             Console.WriteLine("Player Logged in: " + player.name);
             player.SendSysMsg("You have logged in as " + player.name);
 
@@ -185,10 +184,10 @@ namespace ConsolespaceshipsServer
 
 
             //Sends the broadcast message to every player in the sector that is not itself
-            foreach (KeyValuePair<string, Player> otherPlayer in playerList)
+            foreach (KeyValuePair<Guid, Player> otherPlayer in playerList)
             {
                 if (player.Sector == otherPlayer.Value.Sector
-                    && player != otherPlayer.Value)
+                    && player.PlayerID != otherPlayer.Value.PlayerID)
                 {
                     otherPlayer.Value.SendInfoMsg(broadcastMsg);
                 }
