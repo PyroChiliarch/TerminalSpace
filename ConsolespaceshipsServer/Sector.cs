@@ -54,10 +54,7 @@ namespace ConsolespaceshipsServer
 
 
         internal bool SpawnSpaceObject(SpaceObject newObject, Transform pos)
-        {
-            Console.WriteLine("Attempting to create Object at: " + pos.ToString());
-            Console.WriteLine("Location is clear? " + !spaceObjectList.ContainsKey(pos));
-            
+        {   
 
             if (!spaceObjectList.ContainsKey(pos))
             {
@@ -103,7 +100,7 @@ namespace ConsolespaceshipsServer
 
         public static bool operator !=(Sector c1, Sector c2)
         {
-            return c1.Equals(c2);
+            return !c1.Equals(c2);
         }
 
         public override bool Equals(object obj)

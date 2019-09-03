@@ -230,7 +230,7 @@ namespace ConsolespaceshipsServer
                 return;
             }
 
-
+            
             player.WarpTo(galaxy.GetSector(destination));
 
             player.SendInfoMsg("Arrived at " + destination.ToString());
