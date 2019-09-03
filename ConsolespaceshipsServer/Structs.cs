@@ -6,13 +6,23 @@ using System.Threading.Tasks;
 
 namespace ConsolespaceshipsServer
 {
-    //TODO: Remove
     
+
+
+
+
+
+
+
 
 
 
     struct Vector3
     {
+        //WARNING
+        //Overides Equals()
+
+
         public float x;
         public float y;
         public float z;
@@ -24,12 +34,77 @@ namespace ConsolespaceshipsServer
             z = _z;
         }
 
-        
+
+
+
+        //=============================================================================
+        //Overrides
+        //=============================================================================
+
+        public static bool operator ==(Vector3 c1, Vector3 c2)
+        {
+            return c1.Equals(c2);
+        }
+
+        public static bool operator !=(Vector3 c1, Vector3 c2)
+        {
+            return c1.Equals(c2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Vector3))
+            {
+                return false;
+            }
+
+            var vec = (Vector3)obj;
+            return x == vec.x &&
+                   y == vec.y &&
+                   z == vec.z;
+        }
+
+
+        public override string ToString()
+        {
+            string str = "" + x + "," + y + "," + z;
+            return str;
+        }
+
+
+        public override int GetHashCode()
+        {
+            var hashCode = 373119288;
+            hashCode = hashCode * -1521134295 + x.GetHashCode();
+            hashCode = hashCode * -1521134295 + y.GetHashCode();
+            hashCode = hashCode * -1521134295 + z.GetHashCode();
+            return hashCode;
+        }
 
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public struct Vector3Int
     {
+        //WARNING
+        //Overides Equals()
+
         public int x;
         public int y;
         public int z;
@@ -41,6 +116,15 @@ namespace ConsolespaceshipsServer
             y = _y;
             z = _z;
         }
+
+
+
+
+
+
+        //=============================================================================
+        //Overrides
+        //=============================================================================
 
         public static bool operator ==(Vector3Int c1, Vector3Int c2)
         {

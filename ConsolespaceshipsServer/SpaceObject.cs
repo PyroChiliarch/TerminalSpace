@@ -11,6 +11,8 @@ namespace ConsolespaceshipsServer
 
         public Transform Transform;
 
+
+
         public string Name
         {
             get;
@@ -20,7 +22,7 @@ namespace ConsolespaceshipsServer
         public int Health
         {
             get;
-            private set;
+            set;
         }
 
         public int MaxHealth
@@ -31,6 +33,14 @@ namespace ConsolespaceshipsServer
 
 
 
+
+
+
+
+
+        //=============================================================================
+        //Constructors
+        //=============================================================================
 
         public SpaceObject()
         {
