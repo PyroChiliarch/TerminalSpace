@@ -11,7 +11,9 @@ using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
 
-namespace ConsolespaceshipsServer
+using Server.Space;
+
+namespace Server
 {
     public partial class ServerWindowForm : Form
     {

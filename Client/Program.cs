@@ -9,11 +9,11 @@ using System.Net.Sockets;
 
 using System.Windows.Forms;
 
-namespace ConsolespaceshipsServer
+namespace Client
 {
     class Program
     {
-        
+
         const string version = "v0.1.0";
 
         static void Main(string[] args)
@@ -21,7 +21,7 @@ namespace ConsolespaceshipsServer
             //Setup Window
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ServerWindowForm());
+            Application.Run(new ClientWindowForm());
         }
     }
 }

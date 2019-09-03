@@ -1,4 +1,4 @@
-﻿namespace Consolespaceships
+﻿namespace Client
 {
     partial class ClientWindowForm
     {
@@ -59,8 +59,8 @@
             // listMsgHistory
             // 
             this.listMsgHistory.Activation = System.Windows.Forms.ItemActivation.OneClick;
-            this.listMsgHistory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.listMsgHistory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listMsgHistory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colTime,

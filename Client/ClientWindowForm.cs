@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Consolespaceships
+namespace Client
 {
     public partial class ClientWindowForm : Form
     {

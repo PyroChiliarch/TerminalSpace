@@ -1,4 +1,4 @@
-﻿namespace ConsolespaceshipsServer
+﻿namespace Server
 {
     partial class ServerWindowForm
     {

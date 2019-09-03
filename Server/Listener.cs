@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 
-namespace ConsolespaceshipsServer
+namespace Server
 {
 
     //The listener class once it has started listening for new connections will continuously 
