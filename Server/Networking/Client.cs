@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Server
+namespace Server.Networking
 {
     class Client
     {
