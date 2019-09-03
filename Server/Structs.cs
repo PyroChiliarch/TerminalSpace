@@ -48,7 +48,7 @@ namespace Server
 
         public static bool operator !=(Vector3 c1, Vector3 c2)
         {
-            return c1.Equals(c2);
+            return !c1.Equals(c2);
         }
 
         public override bool Equals(object obj)
@@ -133,7 +133,7 @@ namespace Server
 
         public static bool operator !=(Vector3Int c1, Vector3Int c2)
         {
-            return c1.Equals(c2);
+            return !c1.Equals(c2);
         }
 
         public override bool Equals(object obj)

@@ -19,7 +19,7 @@ namespace Server
         //Commands are stored with an event that will be called when the action is made
         //If you want a function to be called when the player does an action,
         //Subscribe it to the event listed in this list.
-        public Dictionary<string, PlayerActionHandler> playerActionList;
+        public Dictionary<string, PlayerAction> playerActionList;
 
         //TODO: Make Private
         public Client remoteClient;
@@ -60,23 +60,81 @@ namespace Server
 
             //Setup the list of player actions
             //And asign each of them an event
-            playerActionList = new Dictionary<string, PlayerActionHandler>()
+            playerActionList = new Dictionary<string, PlayerAction>()
             {
-                {"login", PlayerLoginEvent },
-                {"echo", PlayerEchoEvent },
-                {"yell", PlayerYellEvent },
-                {"help", PlayerHelpEvent },
-                {"whereami", PlayerWhereamiEvent },
-                {"broadcast", PlayerBroadcastEvent },
-                {"radar", PlayerRadarEvent },
-                {"warpto", PlayerWarptoEvent },
-                {"create", PlayerCreateEvent }
+                {"login",
+                    new PlayerAction(
+                    "login",
+                    "login <username> <password>",
+                    "Login to the game",
+                    PlayerLoginEvent) },
+
+                {"echo",
+                    new PlayerAction(
+                    "echo", 
+                    "echo",
+                    "Receive an echo from the server",
+                    PlayerEchoEvent) },
+
+                {"yell",
+                    new PlayerAction(
+                    "yell",
+                    "yell",
+                    "Yell into space",
+                    PlayerYellEvent) },
+
+                {"help",
+                    new PlayerAction(
+                    "help",
+                    "help",
+                    "List every command",
+                    PlayerHelpEvent) },
+
+                {"whereami",
+                    new PlayerAction(
+                    "whereami",
+                    "whereami",
+                    "Tells you your location",
+                    PlayerWhereamiEvent) },
+
+                {"broadcast",
+                    new PlayerAction(
+                    "broadcast",
+                    "broadcast <message>",
+                    "Sends a message to everyone in the sector",
+                    PlayerBroadcastEvent) },
+
+                {"radar",
+                    new PlayerAction(
+                    "radar",
+                    "radar",
+                    "Searches for Objects in the sector",
+                    PlayerRadarEvent) },
+
+                {"warpto",
+                    new PlayerAction(
+                    "warpto",
+                    "warpto <x> <y> <z>",
+                    "Warp to another sector",
+                    PlayerWarptoEvent) },
+
+                {"create",
+                    new PlayerAction(
+                    "create",
+                    "create <name> <x,y,z>",
+                    "Creates a spaceObject at specified  location",
+                    PlayerCreateEvent) }
             };
 
+            //TODO: test
+            //Console.WriteLine(playerActionList.ContainsKey((new PlayerAction("help"))));
+            //Console.WriteLine(new PlayerAction("help") == new PlayerAction("help", "ah", "asdf"));
+            //END TEST
+
             //Subscribe to player actions that will affect the player themselves
-            playerActionList["echo"] += PlayerActionEcho;
-            playerActionList["help"] += PlayerActionHelp;
-            playerActionList["whereami"] += PlayerActionWhereami;
+            playerActionList["echo"].ActionHandler += PlayerActionEcho;
+            playerActionList["help"].ActionHandler += PlayerActionHelp;
+            playerActionList["whereami"].ActionHandler += PlayerActionWhereami;
         }
 
 
@@ -113,12 +171,14 @@ namespace Server
 
             string[] command = action.Split(new char[] { ' ' });
 
+            
+
 
             //Check to see if it is a command that should be actioned
             if (playerActionList.ContainsKey(command[0]))
             {
 
-                playerActionList[command[0]].Invoke(this, action);
+                playerActionList[command[0]].ActionHandler.Invoke(this, action);
                 return true;
             }
             else
@@ -186,14 +246,13 @@ namespace Server
         //Lists commands
         private void PlayerActionHelp (Player player, string action)
         {
-            SendSysMsg("Help- Shows this list");
-            SendSysMsg("Echo- Echos a response from the server");
-            SendSysMsg("Yell- Scream into space");
-            SendSysMsg("whereami- Tells you where you are");
-            SendSysMsg("Broadcast- Broadcasts a message to everyone in the sector");
-            SendSysMsg("Radar- Lists objects in the sector");
-            SendSysMsg("Warpto- Move to another sector");
-            SendSysMsg("Create- Spawn an object");
+            foreach (KeyValuePair<string, PlayerAction> command in playerActionList)
+            {
+                SendInfoMsg("------------------");
+                SendInfoMsg(command.Value.Name);
+                SendInfoMsg(command.Value.Syntax);
+                SendInfoMsg(command.Value.Description);
+            }
         }
 
         private void PlayerActionWhereami (Player player, string action)

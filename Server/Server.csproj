@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Networking\Client.cs" />
+    <Compile Include="PlayerAction.cs" />
     <Compile Include="Space\Galaxy.cs" />
     <Compile Include="Networking\Listener.cs" />
     <Compile Include="Player.cs" />

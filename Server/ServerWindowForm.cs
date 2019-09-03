@@ -94,17 +94,21 @@ namespace Server
             //Setup a new client with a the new connection(Socket)
             Player player = new Player(newConnection, null, new Transform(), Guid.NewGuid());
 
+            
+
             //Setup remoteClient events
             player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
             player.remoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(Client_Disconnected);
 
             //Setup Player events
-            player.playerActionList["yell"] += Player_PlayerYellEvent;
-            player.playerActionList["login"] += Player_PlayerLoginEvent;
-            player.playerActionList["broadcast"] += Player_PlayerBroadcastEvent;
-            player.playerActionList["radar"] += Player_PlayerRadarEvent;
-            player.playerActionList["warpto"] += Player_PlayerWarptoEvent;
-            player.playerActionList["create"] += Player_PlayerCreateEvent;
+            player.playerActionList["yell"].ActionHandler += Player_PlayerYellEvent;
+            player.playerActionList["login"].ActionHandler += Player_PlayerLoginEvent;
+            player.playerActionList["broadcast"].ActionHandler += Player_PlayerBroadcastEvent;
+            player.playerActionList["radar"].ActionHandler += Player_PlayerRadarEvent;
+            player.playerActionList["warpto"].ActionHandler += Player_PlayerWarptoEvent;
+            player.playerActionList["create"].ActionHandler += Player_PlayerCreateEvent;
+
+            
 
             //Add the new client to the list in the window
             Invoke((MethodInvoker)delegate
@@ -344,4 +348,5 @@ namespace Server
 
         
     }
+
 }
