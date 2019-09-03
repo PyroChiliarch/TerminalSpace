@@ -16,23 +16,28 @@ namespace ConsolespaceshipsServer
         //Commands are stored with an event that will be called when the action is made
         //If you want a function to be called when the player does an action,
         //Subscribe it to the event listed in this list.
-        public static Dictionary<string, PlayerActionHandler> playerActionList;
+        public Dictionary<string, PlayerActionHandler> playerActionList;
 
+        //TODO: Make Private
         public Client remoteClient;
-
-        public SectorCoord CurrentSector
-        {
-            get;
-            private set;
-        }
 
         public string name;
 
+        //Players postion
+        public Transform Transform;
+
+        //Players Galactic Position
+        public SectorTransform SectorTransform;
+
         //Constructor
-        public Player(Socket newRemoteClient, SectorCoord spawnSector)
+        public Player(Socket newRemoteClient, SectorTransform sector, Transform pos)
         {
+            Transform = new Transform();
+            SectorTransform = new SectorTransform();
             remoteClient = new Client(newRemoteClient);
-            CurrentSector = spawnSector;
+            Transform = pos;
+            SectorTransform = sector;
+
 
             //Setup the list of player actions
             //And asign each of them an event
@@ -43,7 +48,10 @@ namespace ConsolespaceshipsServer
                 {"yell", PlayerYellEvent },
                 {"help", PlayerHelpEvent },
                 {"whereami", PlayerWhereamiEvent },
-                {"broadcast", PlayerBroadcastEvent }
+                {"broadcast", PlayerBroadcastEvent },
+                {"radar", PlayerRadarEvent },
+                {"warpto", PlayerWarptoEvent },
+                {"create", PlayerCreateEvent }
             };
 
             //Subscribe to player actions that will affect the player themselves
@@ -52,9 +60,28 @@ namespace ConsolespaceshipsServer
             playerActionList["whereami"] += PlayerActionWhereami;
         }
 
-        
 
 
+
+
+
+
+
+
+
+
+
+        //=============================================================================
+        //=============================================================================
+        //Public Methods
+        //=============================================================================
+        //=============================================================================
+
+
+
+
+        //=============================================================================
+        //Methods that affect the player Character
 
         //Causes the player to do an action
         //Returns false if the action is invalid
@@ -82,6 +109,19 @@ namespace ConsolespaceshipsServer
         }
 
 
+        //Warps the player to another sector
+        //Returns Success
+        public bool WarpTo(SectorTransform sector)
+        {
+            if (SectorTransform != sector)
+            {
+                SectorTransform = sector;
+                return true;
+            }
+
+            return false;
+        }
+
 
 
 
@@ -89,7 +129,25 @@ namespace ConsolespaceshipsServer
 
 
         //=============================================================================
-        //Player Action Methods
+        //Methods that affect the client
+
+
+        public void SendInfoMsg(string msg)
+        {
+            remoteClient.Send("INFO:" + msg);
+        }
+
+        public void SendSysMsg(string msg)
+        {
+            remoteClient.Send("SYS:" + msg);
+        }
+
+
+
+
+
+        //=============================================================================
+        //Player Action Methods, (Event Subscribers)
         //These need to be subscribed to the events in player action list to do anything
         //=============================================================================
 
@@ -97,7 +155,7 @@ namespace ConsolespaceshipsServer
         private void PlayerActionEcho (Player player, string action)
         {
             Console.WriteLine("Echo");
-            remoteClient.Send("Echo");
+            SendSysMsg("Echo");
             
         }
 
@@ -107,13 +165,18 @@ namespace ConsolespaceshipsServer
                 "Help: Show this list\n" +
                 "Echo: Get a response from the server\n" +
                 "Yell: Scream into space");
-            remoteClient.Send(commandList);
+            SendSysMsg(commandList);
         }
 
         private void PlayerActionWhereami (Player player, string action)
         {
-            player.remoteClient.Send("You are in sector: " + CurrentSector.x + "," + CurrentSector.y + "," + CurrentSector.z);
+            SendInfoMsg("You are in sector " + SectorTransform.sector.ToString());
         }
+        
+
+
+
+
 
 
 
@@ -132,6 +195,9 @@ namespace ConsolespaceshipsServer
         public event PlayerActionHandler PlayerHelpEvent;
         public event PlayerActionHandler PlayerWhereamiEvent;
         public event PlayerActionHandler PlayerBroadcastEvent;
+        public event PlayerActionHandler PlayerRadarEvent;
+        public event PlayerActionHandler PlayerWarptoEvent;
+        public event PlayerActionHandler PlayerCreateEvent;
             
     }
 }

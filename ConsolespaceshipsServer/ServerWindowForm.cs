@@ -24,11 +24,11 @@ namespace ConsolespaceshipsServer
 
 
         //List of logged in players
-        //TODO: Is this needed?
+        //TODO : Change Key to an object/Reference
         Dictionary<string, Player> playerList;
 
         //List of sectors
-        Dictionary<SectorCoord, Sector> sectorList;
+        Dictionary<SectorTransform, Sector> sectorList;
         
 
 
@@ -51,9 +51,20 @@ namespace ConsolespaceshipsServer
             //List of players
             playerList = new Dictionary<string, Player>();
 
-            //List of sectores
-            sectorList = new Dictionary<SectorCoord, Sector>();
-            
+
+
+            //List of sectors
+            //Spawn test sector
+            //Spawn test object
+            sectorList = new Dictionary<SectorTransform, Sector>();
+
+            SectorTransform spawnSector = new SectorTransform(0, 0, 0);
+            Transform newPos = new Transform();
+            SpaceObject newObject = new SpaceObject();
+            sectorList.Add(spawnSector, new Sector(spawnSector));
+            sectorList[spawnSector].SpawnSpaceObject(newObject, newPos);
+
+
 
 
             //Load event for the windows form
@@ -71,22 +82,95 @@ namespace ConsolespaceshipsServer
 
 
 
+
+
+
+
+        //=============================================================================
+        //Listener event delegates
+        //=============================================================================
+
+        //Called when a new connection is made
+        //Setups player objects
+        private void Listener_SocketAccepted(Socket newConnection)
+        {
+            //Setup a new client with a the new connection(Socket)
+            Player player = new Player(newConnection, new SectorTransform(), new Transform());
+
+            //Setup remoteClient events
+            player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
+            player.remoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(Client_Disconnected);
+
+            //Setup Player events
+            player.playerActionList["yell"] += Player_PlayerYellEvent;
+            player.playerActionList["login"] += Player_PlayerLoginEvent;
+            player.playerActionList["broadcast"] += Player_PlayerBroadcastEvent;
+            player.playerActionList["radar"] += Player_PlayerRadarEvent;
+            player.playerActionList["warpto"] += Player_PlayerWarptoEvent;
+            player.playerActionList["create"] += Player_PlayerCreateEvent;
+
+            //Add the new client to the list in the window
+            Invoke((MethodInvoker)delegate
+            {
+                ListViewItem i = new ListViewItem();
+                i.Text = player.remoteClient.EndPoint.ToString(); //End point = IP + Port
+                i.SubItems.Add(player.remoteClient.ID); //GUID of client
+                i.SubItems.Add("xx"); //Last Message
+                i.SubItems.Add("xx"); //Last message Time
+                i.Tag = player; //The object associated with the table entry
+                lstClients.Items.Add(i);
+            });
+        }
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         //=============================================================================
         //Player Event Delegates
         //=============================================================================
         private void Player_PlayerYellEvent(Player player, string action)
         {
             Console.WriteLine(player.name + " is Yelling!");
-            player.remoteClient.Send("In space, no one can hear you scream!");
+            player.SendInfoMsg("In space, no one can hear you scream!");
         }
 
+        //Spawns the player and adds them to the active player list
         private void Player_PlayerLoginEvent(Player player, string action)
         {
             string[] command = action.Split(new char[] { ' ' });
+
+            //Add player to active player list
             player.name = command[1];
             playerList.Add(player.name, player);
             Console.WriteLine("Player Logged in: " + player.name);
-            player.remoteClient.Send("You have logged in as " + player.name);
+            player.SendSysMsg("You have logged in as " + player.name);
+
+            //Set the players sector
+            SectorTransform newSector = new SectorTransform(0, 0, 0);
+            if (!sectorList.ContainsKey(newSector))
+            {
+                //Make sure the sector exists
+                sectorList.Add(newSector, new Sector(newSector));
+                Console.WriteLine("New Sector Created: " + newSector.ToString());
+            }
+            player.SectorTransform = newSector;
+            player.SendInfoMsg("You are entering sector " + newSector.ToString());
         }
 
         private void Player_PlayerBroadcastEvent(Player player, string action)
@@ -101,61 +185,112 @@ namespace ConsolespaceshipsServer
                 msg += " ";
             }
 
-            string broadcastMsg = "BROADCAST: " + player.name + " : " + msg;
+            string broadcastMsg = player.name + "-" + msg;
 
 
             //Sends the broadcast message to every play in the sector that is not itself
             foreach (KeyValuePair<string, Player> otherPlayer in playerList)
             {
-                if (player.CurrentSector == otherPlayer.Value.CurrentSector
+                if (player.SectorTransform == otherPlayer.Value.SectorTransform
                     && player != otherPlayer.Value)
                 {
-                    otherPlayer.Value.remoteClient.Send(broadcastMsg);
+                    otherPlayer.Value.SendInfoMsg(broadcastMsg);
                 }
             }
         }
 
-
-
-
-
-
-
-
-
-        //=============================================================================
-        //Listener event delegates
-        //=============================================================================
-
-        //Called when a new connection is made
-        private void Listener_SocketAccepted(Socket newConnection)
+        private void Player_PlayerRadarEvent(Player player, string action)
         {
-            //Setup a new client with a the new connection(Socket)
-            Player player = new Player(newConnection, new SectorCoord { x = 0, y = 0, z = 0});
-
-            //Setup remoteClient events
-            player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
-            player.remoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(Client_Disconnected);
-
-            //Setup Player events
-            Player.playerActionList["yell"] += Player_PlayerYellEvent;
-            Player.playerActionList["login"] += Player_PlayerLoginEvent;
-            Player.playerActionList["broadcast"] += Player_PlayerBroadcastEvent;
-
-            //Add the new client to the list in the window
-            Invoke((MethodInvoker)delegate
+            if (!sectorList.ContainsKey(player.SectorTransform))
             {
-               ListViewItem i = new ListViewItem();
-               i.Text = player.remoteClient.EndPoint.ToString(); //End point = IP + Port
-               i.SubItems.Add(player.remoteClient.ID); //GUID of client
-               i.SubItems.Add("xx"); //Last Message
-               i.SubItems.Add("xx"); //Last message Time
-               i.Tag = player; //The object associated with the table entry
-               lstClients.Items.Add(i);
-            });
+                player.SendInfoMsg("You do not exist in your current sector: " + player.SectorTransform);
+                return;
+            }
+
+            Sector playerSector = sectorList[player.SectorTransform];
+            player.SendInfoMsg("Objects Found: " + playerSector.GetSpaceObjectList().Length.ToString());
+            foreach (string item in playerSector.GetSpaceObjectList())
+            {
+                player.SendInfoMsg(item);
+            }
         }
 
-        
+        private void Player_PlayerWarptoEvent(Player player, string action)
+        {
+            string[] command = action.Split(' ');
+
+            //Generate sector coord from command
+            //Catch errors
+            SectorTransform destination;
+            try
+            {
+                destination = new SectorTransform
+                (
+                    int.Parse(command[1]), //x
+                    int.Parse(command[2]), //y
+                    int.Parse(command[3])  //z
+                );
+            }
+            catch
+            {
+                Console.WriteLine("Invalid Warp Command: " + action);
+                player.SendInfoMsg("Invalid Warp Command");
+                return;
+            }
+
+            //Generate the sector  if it dosn't exist
+            if (!sectorList.ContainsKey(destination))
+            {
+                sectorList.Add(destination, new Sector(destination));
+            }
+
+
+            player.WarpTo(destination);
+
+            player.SendInfoMsg("Arrived at " + destination.ToString());
+        }
+
+        private void Player_PlayerCreateEvent(Player player, string action)
+        {
+            string[] command = action.Split(' ');
+
+            //first arg
+            string name = command[1];
+
+            //Second arg
+            Transform spaceCoord = new Transform();
+            string[] parts = command[2].Split(',');
+            spaceCoord.position.x = float.Parse(parts[0]);
+            spaceCoord.position.y = float.Parse(parts[1]);
+            spaceCoord.position.z = float.Parse(parts[2]);
+
+            bool result = sectorList[player.SectorTransform].SpawnSpaceObject(new SpaceObject(name), spaceCoord);
+
+            if (result)
+            {
+                player.SendInfoMsg("Object Created");
+            }
+            else
+            {
+                player.SendInfoMsg("Creation Failed");
+            }
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -94,7 +94,9 @@ namespace ConsolespaceshipsServer
         //Sends a string to the client
         public void Send(string msg)
         {
-            socket.Send(Encoding.Default.GetBytes(msg));
+            char eofChar = ';';
+
+            socket.Send(Encoding.Default.GetBytes(msg + eofChar));
         }
 
         //Triggers when the remote client sends a message
