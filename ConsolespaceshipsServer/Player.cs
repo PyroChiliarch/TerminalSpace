@@ -127,12 +127,16 @@ namespace ConsolespaceshipsServer
         //Returns Success
         public bool WarpTo(SectorTransform sector)
         {
+
+
             if (SectorTransform != sector)
             {
                 SectorTransform = sector;
+                
                 return true;
             }
 
+            
             return false;
         }
 

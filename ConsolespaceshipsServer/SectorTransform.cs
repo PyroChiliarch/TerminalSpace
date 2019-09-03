@@ -65,7 +65,7 @@ namespace ConsolespaceshipsServer
 
         public static bool operator !=(SectorTransform c1, SectorTransform c2)
         {
-            return c1.Equals(c2);
+            return !c1.Equals(c2);
         }
 
         public override bool Equals(object obj)

@@ -199,6 +199,7 @@ namespace ConsolespaceshipsServer
         {
 
             string[] objectList = galaxy.GetSector(player.SectorTransform).GetSpaceObjectList();
+            player.SendInfoMsg("Sending radar ping in: " + player.SectorTransform.ToString());
             player.SendInfoMsg("Objects Found: " + objectList.Length.ToString());
             foreach (string item in objectList)
             {
@@ -253,11 +254,11 @@ namespace ConsolespaceshipsServer
 
             if (result)
             {
-                player.SendInfoMsg("Object Created at pos: " + pos.ToString());
+                player.SendInfoMsg("Object Created at " + pos.ToString());
             }
             else
             {
-                player.SendInfoMsg("Creation Failed at pos: " + pos.ToString());
+                player.SendInfoMsg("Creation Failed at " + pos.ToString());
             }
 
 
