@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client.cs" />
+    <Compile Include="Galaxy.cs" />
     <Compile Include="Listener.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />

@@ -27,8 +27,8 @@ namespace ConsolespaceshipsServer
         //TODO : Change Key to an object/Reference
         Dictionary<string, Player> playerList;
 
-        //List of sectors
-        Dictionary<SectorTransform, Sector> sectorList;
+        //Galaxy
+        Galaxy galaxy;
         
 
 
@@ -51,19 +51,20 @@ namespace ConsolespaceshipsServer
             //List of players
             playerList = new Dictionary<string, Player>();
 
-
+            //The Galaxy
+            galaxy = new Galaxy();
 
             //List of sectors
             //Spawn test sector
             //Spawn test object
-            sectorList = new Dictionary<SectorTransform, Sector>();
+            
 
             SectorTransform spawnSector = new SectorTransform(0, 0, 0);
             Transform newPos = new Transform();
             SpaceObject newObject = new SpaceObject();
-            sectorList.Add(spawnSector, new Sector(spawnSector));
-            sectorList[spawnSector].SpawnSpaceObject(newObject, newPos);
-
+            //sectorList.Add(spawnSector, new Sector(spawnSector));
+            galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject, newPos);
+            galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject, newPos);
 
 
 
@@ -162,15 +163,10 @@ namespace ConsolespaceshipsServer
             player.SendSysMsg("You have logged in as " + player.name);
 
             //Set the players sector
-            SectorTransform newSector = new SectorTransform(0, 0, 0);
-            if (!sectorList.ContainsKey(newSector))
-            {
-                //Make sure the sector exists
-                sectorList.Add(newSector, new Sector(newSector));
-                Console.WriteLine("New Sector Created: " + newSector.ToString());
-            }
-            player.SectorTransform = newSector;
-            player.SendInfoMsg("You are entering sector " + newSector.ToString());
+            SectorTransform sector = new SectorTransform(0, 0, 0);
+            player.SectorTransform = galaxy.GetSector(sector).SectorTransform;
+
+            player.SendInfoMsg("You are entering sector " + sector.ToString());
         }
 
         private void Player_PlayerBroadcastEvent(Player player, string action)
@@ -201,15 +197,10 @@ namespace ConsolespaceshipsServer
 
         private void Player_PlayerRadarEvent(Player player, string action)
         {
-            if (!sectorList.ContainsKey(player.SectorTransform))
-            {
-                player.SendInfoMsg("You do not exist in your current sector: " + player.SectorTransform);
-                return;
-            }
 
-            Sector playerSector = sectorList[player.SectorTransform];
-            player.SendInfoMsg("Objects Found: " + playerSector.GetSpaceObjectList().Length.ToString());
-            foreach (string item in playerSector.GetSpaceObjectList())
+            string[] objectList = galaxy.GetSector(player.SectorTransform).GetSpaceObjectList();
+            player.SendInfoMsg("Objects Found: " + objectList.Length.ToString());
+            foreach (string item in objectList)
             {
                 player.SendInfoMsg(item);
             }
@@ -238,12 +229,6 @@ namespace ConsolespaceshipsServer
                 return;
             }
 
-            //Generate the sector  if it dosn't exist
-            if (!sectorList.ContainsKey(destination))
-            {
-                sectorList.Add(destination, new Sector(destination));
-            }
-
 
             player.WarpTo(destination);
 
@@ -258,21 +243,21 @@ namespace ConsolespaceshipsServer
             string name = command[1];
 
             //Second arg
-            Transform spaceCoord = new Transform();
+            Transform pos = new Transform();
             string[] parts = command[2].Split(',');
-            spaceCoord.position.x = float.Parse(parts[0]);
-            spaceCoord.position.y = float.Parse(parts[1]);
-            spaceCoord.position.z = float.Parse(parts[2]);
+            pos.position.x = float.Parse(parts[0]);
+            pos.position.y = float.Parse(parts[1]);
+            pos.position.z = float.Parse(parts[2]);
 
-            bool result = sectorList[player.SectorTransform].SpawnSpaceObject(new SpaceObject(name), spaceCoord);
+            bool result = galaxy.GetSector(player.SectorTransform).SpawnSpaceObject(new SpaceObject(name), pos);
 
             if (result)
             {
-                player.SendInfoMsg("Object Created");
+                player.SendInfoMsg("Object Created at pos: " + pos.ToString());
             }
             else
             {
-                player.SendInfoMsg("Creation Failed");
+                player.SendInfoMsg("Creation Failed at pos: " + pos.ToString());
             }
 
 

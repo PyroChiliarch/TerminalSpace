@@ -27,9 +27,23 @@ namespace ConsolespaceshipsServer
         public Transform Transform;
 
         //Players Galactic Position
+        //TODO: Change to just be a Sector object reference
         public SectorTransform SectorTransform;
 
+
+
+
+
+
+
+
+
+
+
+        //=============================================================================
         //Constructor
+        //=============================================================================
+
         public Player(Socket newRemoteClient, SectorTransform sector, Transform pos)
         {
             Transform = new Transform();
@@ -159,18 +173,23 @@ namespace ConsolespaceshipsServer
             
         }
 
+
+        //Lists commands
         private void PlayerActionHelp (Player player, string action)
         {
-            string commandList = ("" +
-                "Help: Show this list\n" +
-                "Echo: Get a response from the server\n" +
-                "Yell: Scream into space");
-            SendSysMsg(commandList);
+            SendSysMsg("Help- Shows this list");
+            SendSysMsg("Echo- Echos a response from the server");
+            SendSysMsg("Yell- Scream into space");
+            SendSysMsg("whereami- Tells you where you are");
+            SendSysMsg("Broadcast- Broadcasts a message to everyone in the sector");
+            SendSysMsg("Radar- Lists objects in the sector");
+            SendSysMsg("Warpto- Move to another sector");
+            SendSysMsg("Create- Spawn an object");
         }
 
         private void PlayerActionWhereami (Player player, string action)
         {
-            SendInfoMsg("You are in sector " + SectorTransform.sector.ToString());
+            SendInfoMsg("You are in sector " + SectorTransform.position.ToString());
         }
         
 
@@ -186,6 +205,7 @@ namespace ConsolespaceshipsServer
         //=============================================================================
         //Player Action Events
         //=============================================================================
+        //These are all events for when the player sends a command
 
         public delegate void PlayerActionHandler(Player player, string action);
 
