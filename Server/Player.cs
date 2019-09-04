@@ -21,7 +21,6 @@ namespace Server
         //Subscribe it to the event listed in this list.
         public Dictionary<string, PlayerAction> playerActionList;
 
-        //TODO: Make Private
         public Client RemoteClient {
             get;
             private set;
