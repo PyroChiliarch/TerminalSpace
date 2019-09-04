@@ -9,9 +9,6 @@ namespace Server.Space
     class Asteroid : SpaceObject, IHealth
     {
 
-        //TODO: WORK here
-        //public int Healt
-
 
 
         public int Health

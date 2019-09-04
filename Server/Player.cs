@@ -133,11 +133,6 @@ namespace Server
                         PlayerDamageEvent)}
             };
 
-            //TODO: test
-            //Console.WriteLine(playerActionList.ContainsKey((new PlayerAction("help"))));
-            //Console.WriteLine(new PlayerAction("help") == new PlayerAction("help", "ah", "asdf"));
-            //END TEST
-
             //Subscribe to player actions that will affect the player themselves
             playerActionList["echo"].ActionHandler += PlayerActionEcho;
             playerActionList["help"].ActionHandler += PlayerActionHelp;

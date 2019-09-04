@@ -11,8 +11,6 @@ namespace Server.Space
         //WARNING
         //Overides Equals()
 
-        //TODO: Change Key type
-        //Objects cannot be in the same position when using their transform for the key
         private Dictionary<uint, SpaceObject> spaceObjectList;
         public SectorTransform SectorTransform;
 
