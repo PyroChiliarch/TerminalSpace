@@ -95,10 +95,10 @@ namespace Server
             Player player = new Player(newConnection, null, new Transform(), Guid.NewGuid());
 
             
-
+            //TODO
             //Setup remoteClient events
-            player.remoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
-            player.remoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(Client_Disconnected);
+            player.RemoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
+            player.RemoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(Client_Disconnected);
 
             //Setup Player events
             player.playerActionList["yell"].ActionHandler += Player_PlayerYellEvent;
@@ -113,9 +113,10 @@ namespace Server
             //Add the new client to the list in the window
             Invoke((MethodInvoker)delegate
             {
+                //TODO
                 ListViewItem i = new ListViewItem();
-                i.Text = player.remoteClient.EndPoint.ToString(); //End point = IP + Port
-                i.SubItems.Add(player.remoteClient.ID); //GUID of client
+                i.Text = player.RemoteClient.EndPoint.ToString(); //End point = IP + Port
+                i.SubItems.Add(player.RemoteClient.ID); //GUID of client
                 i.SubItems.Add("xx"); //Last Message
                 i.SubItems.Add("xx"); //Last message Time
                 i.Tag = player; //The object associated with the table entry
@@ -208,7 +209,7 @@ namespace Server
             {
                 if (item is IHealth)
                 {
-                    IHealth target = (IHealth)item;
+                    IHealth target = item as IHealth;
                     player.SendInfoMsg(item.IdInSector + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
                 }
                 else
@@ -292,9 +293,9 @@ namespace Server
             if (target is IHealth)
             {
                 ((IHealth)target).AffectHealth(int.Parse(amount) * -1);
+                player.SendInfoMsg(target.Name + " was damaged");
             }
         }
-
 
 
 
@@ -328,7 +329,7 @@ namespace Server
         private void Client_Disconnected(Client sender)
         {
             
-
+            //TODO
             //Remove the client that disconnected from the client list
             Invoke((MethodInvoker)delegate
             {
@@ -336,7 +337,7 @@ namespace Server
                {
                    Player player = lstClients.Items[i].Tag as Player;
 
-                   if (player.remoteClient.ID == sender.ID)
+                   if (player.RemoteClient.ID == sender.ID)
                    {
                        lstClients.Items.RemoveAt(i);
                        break;
@@ -351,6 +352,7 @@ namespace Server
         //Makes the client/player do an action if the msg was a command
         private void Client_ReceivedMsg(Client sender, byte[] data)
         {
+            //TODO
             string incomingMsg = Encoding.Default.GetString(data);
 
             //Update the client table with the message that was received
@@ -360,7 +362,7 @@ namespace Server
                 {
                     Player player = lstClients.Items[i].Tag as Player;
 
-                    if (player.remoteClient.ID == sender.ID)
+                    if (player.RemoteClient.ID == sender.ID)
                     {
                         //Update the Table
                         lstClients.Items[i].SubItems[2].Text = incomingMsg;

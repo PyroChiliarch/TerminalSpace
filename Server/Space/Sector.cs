@@ -65,7 +65,7 @@ namespace Server.Space
 
         internal bool SpawnSpaceObject(SpaceObject newObject)
         {
-
+            //TODO: Make a simple Collision check
             newObject.DestroyEvent += SpaceObject_DestroyEvent;
             newObject.IdInSector = idInSectorCounter;
             spaceObjectList.Add(idInSectorCounter, newObject);

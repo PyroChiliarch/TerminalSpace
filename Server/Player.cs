@@ -22,7 +22,10 @@ namespace Server
         public Dictionary<string, PlayerAction> playerActionList;
 
         //TODO: Make Private
-        public Client remoteClient;
+        public Client RemoteClient {
+            get;
+            private set;
+        }
 
         public string name;
 
@@ -54,9 +57,10 @@ namespace Server
         {
             Transform = new Transform();
             Sector = sector;
-            remoteClient = new Client(newRemoteClient);
+            RemoteClient = new Client(newRemoteClient);
             Transform = pos;
             PlayerID = newPlayerID;
+
 
             //Setup the list of player actions
             //And asign each of them an event
@@ -219,12 +223,12 @@ namespace Server
 
         public void SendInfoMsg(string msg)
         {
-            remoteClient.Send("INFO:" + msg);
+            RemoteClient.Send("INFO:" + msg);
         }
 
         public void SendSysMsg(string msg)
         {
-            remoteClient.Send("SYS:" + msg);
+            RemoteClient.Send("SYS:" + msg);
         }
 
 
