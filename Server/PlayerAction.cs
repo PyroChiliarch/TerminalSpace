@@ -8,26 +8,24 @@ namespace Server
 {
     class PlayerAction
     {
+
+
         public readonly string Name;
         public readonly string Syntax;
         public readonly string Description;
         public Player.PlayerActionHandler ActionHandler;
 
-        /// <summary>
-        /// Use to compare against other player actions
-        /// </summary>
-        /// <param name="name"></param>
-        public PlayerAction(string name)
-        {
 
-        }
 
-        /// <summary>
-        /// Use to create a full proper PlayerAction
-        /// </summary>
-        /// <param name="_name"></param>
-        /// <param name="_syntax"></param>
-        /// <param name="_description"></param>
+
+
+
+
+
+        //=============================================================================
+        //Constructors
+        //=============================================================================
+
         public PlayerAction (string _name, string _syntax, string _description, Player.PlayerActionHandler _actionHandler)
         {
             Name = _name;
@@ -38,10 +36,14 @@ namespace Server
 
 
 
-        
 
 
 
+
+
+        //=============================================================================
+        //Overrides
+        //=============================================================================
 
         public static bool operator ==(PlayerAction c1, PlayerAction c2)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Server.Space
 {
-    class SpaceObject
+    abstract class SpaceObject
     {
 
         public Transform Transform;
@@ -16,20 +16,9 @@ namespace Server.Space
         public string Name
         {
             get;
-            private set;
+            protected set;
         }
 
-        public int Health
-        {
-            get;
-            set;
-        }
-
-        public int MaxHealth
-        {
-            get;
-            private set;
-        }
 
 
 
@@ -44,17 +33,38 @@ namespace Server.Space
 
         public SpaceObject()
         {
-            Name = "testItem";
-            MaxHealth = 100;
-            Health = MaxHealth;
-            Transform = null;
+            Name = "Undefined";
         }
 
-        public SpaceObject(string name)
+
+        //=============================================================================
+        //Methods
+        //=============================================================================
+
+
+        //Removes an object from existence
+        public virtual void Destroy ()
         {
-            Name = name;
-            MaxHealth = 100;
-            Health = MaxHealth;
+            OnDestroy();
         }
+
+
+
+
+
+        //=============================================================================
+        //Events
+        //=============================================================================
+
+
+        //Called when object is destroyed
+        //Called Last
+        public virtual void OnDestroy()
+        {
+            this.DestroyEvent(this, EventArgs.Empty);
+        }
+        
+
+        public event EventHandler DestroyEvent;
     }
 }

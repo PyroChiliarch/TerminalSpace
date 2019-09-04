@@ -59,7 +59,7 @@ namespace Server
 
             SectorTransform spawnSector = new SectorTransform(0, 0, 0);
             Transform newPos = new Transform();
-            SpaceObject newObject = new SpaceObject();
+            SpaceObject newObject = new Asteroid();
             galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject, newPos);
 
 
@@ -250,7 +250,7 @@ namespace Server
             pos.position.y = float.Parse(parts[1]);
             pos.position.z = float.Parse(parts[2]);
 
-            bool result = galaxy.GetSector(player.Sector.SectorTransform).SpawnSpaceObject(new SpaceObject(name), pos);
+            bool result = galaxy.GetSector(player.Sector.SectorTransform).SpawnSpaceObject(new Asteroid(name), pos);
 
             if (result)
             {
