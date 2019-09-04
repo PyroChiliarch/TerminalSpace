@@ -9,8 +9,12 @@ namespace Server.Space
     abstract class SpaceObject
     {
 
+        public Guid ID;
+        public uint IdInSector;
+
         public Transform Transform;
 
+        
 
 
         public string Name
@@ -33,6 +37,7 @@ namespace Server.Space
 
         public SpaceObject()
         {
+            ID = Guid.NewGuid();
             Name = "Undefined";
         }
 

@@ -64,66 +64,73 @@ namespace Server
             {
                 {"login",
                     new PlayerAction(
-                    "login",
-                    "login <username> <password>",
-                    "Login to the game",
-                    PlayerLoginEvent) },
+                        "login",
+                        "login <username> <password>",
+                        "Login to the game",
+                        PlayerLoginEvent) },
 
                 {"echo",
                     new PlayerAction(
-                    "echo", 
-                    "echo",
-                    "Receive an echo from the server",
-                    PlayerEchoEvent) },
+                        "echo", 
+                        "echo",
+                        "Receive an echo from the server",
+                        PlayerEchoEvent) },
 
                 {"yell",
                     new PlayerAction(
-                    "yell",
-                    "yell",
-                    "Yell into space",
-                    PlayerYellEvent) },
+                        "yell",
+                        "yell",
+                        "Yell into space",
+                        PlayerYellEvent) },
 
                 {"help",
                     new PlayerAction(
-                    "help",
-                    "help",
-                    "List every command",
-                    PlayerHelpEvent) },
+                        "help",
+                        "help",
+                        "List every command",
+                        PlayerHelpEvent) },
 
                 {"whereami",
                     new PlayerAction(
-                    "whereami",
-                    "whereami",
-                    "Tells you your location",
-                    PlayerWhereamiEvent) },
+                        "whereami",
+                        "whereami",
+                        "Tells you your location",
+                        PlayerWhereamiEvent) },
 
                 {"broadcast",
                     new PlayerAction(
-                    "broadcast",
-                    "broadcast <message>",
-                    "Sends a message to everyone in the sector",
-                    PlayerBroadcastEvent) },
+                        "broadcast",
+                        "broadcast <message>",
+                        "Sends a message to everyone in the sector",
+                        PlayerBroadcastEvent) },
 
                 {"radar",
                     new PlayerAction(
-                    "radar",
-                    "radar",
-                    "Searches for Objects in the sector",
-                    PlayerRadarEvent) },
+                        "radar",
+                        "radar",
+                        "Searches for Objects in the sector",
+                        PlayerRadarEvent) },
 
                 {"warpto",
                     new PlayerAction(
-                    "warpto",
-                    "warpto <x> <y> <z>",
-                    "Warp to another sector",
-                    PlayerWarptoEvent) },
+                        "warpto",
+                        "warpto <x> <y> <z>",
+                        "Warp to another sector",
+                        PlayerWarptoEvent) },
 
                 {"create",
                     new PlayerAction(
-                    "create",
-                    "create <name> <x,y,z>",
-                    "Creates a spaceObject at specified  location",
-                    PlayerCreateEvent) }
+                        "create",
+                        "create <name> <x,y,z>",
+                        "Creates a spaceObject at specified  location",
+                        PlayerCreateEvent) },
+
+                {"damage",
+                    new PlayerAction(
+                        "damage",
+                        "damage <id>",
+                        "Damages and object of <id>",
+                        PlayerDamageEvent)}
             };
 
             //TODO: test
@@ -286,6 +293,7 @@ namespace Server
         public event PlayerActionHandler PlayerRadarEvent;
         public event PlayerActionHandler PlayerWarptoEvent;
         public event PlayerActionHandler PlayerCreateEvent;
+        public event PlayerActionHandler PlayerDamageEvent;
             
     }
 }

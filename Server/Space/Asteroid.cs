@@ -38,6 +38,7 @@ namespace Server.Space
             Name = "Asteroid";
             MaxHealth = 100;
             Health = MaxHealth;
+            ID = Guid.NewGuid();
         }
 
         public Asteroid(string name, int maxHealth)
@@ -45,7 +46,7 @@ namespace Server.Space
             Name = name;
             MaxHealth = maxHealth;
             Health = MaxHealth;
-
+            ID = Guid.NewGuid();
         }
 
 
@@ -62,7 +63,7 @@ namespace Server.Space
 
 
         //=============================================================================
-        //
+        //IHealth Methods
         //=============================================================================
 
 

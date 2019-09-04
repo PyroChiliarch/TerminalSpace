@@ -60,7 +60,7 @@ namespace Server
             SectorTransform spawnSector = new SectorTransform(0, 0, 0);
             Transform newPos = new Transform();
             SpaceObject newObject = new Asteroid();
-            galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject, newPos);
+            galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject);
 
 
 
@@ -107,7 +107,7 @@ namespace Server
             player.playerActionList["radar"].ActionHandler += Player_PlayerRadarEvent;
             player.playerActionList["warpto"].ActionHandler += Player_PlayerWarptoEvent;
             player.playerActionList["create"].ActionHandler += Player_PlayerCreateEvent;
-
+            player.playerActionList["damage"].ActionHandler += Player_PlayerDamageEvent;
             
 
             //Add the new client to the list in the window
@@ -124,6 +124,8 @@ namespace Server
         }
 
         
+
+
 
 
 
@@ -198,12 +200,23 @@ namespace Server
         private void Player_PlayerRadarEvent(Player player, string action)
         {
 
-            string[] objectList = player.Sector.GetSpaceObjectList();
+            SpaceObject[] objectList = player.Sector.GetSpaceObjectList();
             player.SendInfoMsg("Sending radar ping in: " + player.Sector.ToString());
             player.SendInfoMsg("Objects Found: " + objectList.Length.ToString());
-            foreach (string item in objectList)
+
+            foreach (SpaceObject item in objectList)
             {
-                player.SendInfoMsg(item);
+                if (item is IHealth)
+                {
+                    IHealth target = (IHealth)item;
+                    player.SendInfoMsg(item.IdInSector + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
+                }
+                else
+                {
+                    player.SendInfoMsg(item.IdInSector + " - " + item.Name);
+                }
+                
+
             }
         }
 
@@ -250,7 +263,10 @@ namespace Server
             pos.position.y = float.Parse(parts[1]);
             pos.position.z = float.Parse(parts[2]);
 
-            bool result = galaxy.GetSector(player.Sector.SectorTransform).SpawnSpaceObject(new Asteroid(name), pos);
+            Asteroid asteroid = new Asteroid(name, 100);
+            asteroid.Transform = pos;
+
+            bool result = galaxy.GetSector(player.Sector.SectorTransform).SpawnSpaceObject(asteroid);
 
             if (result)
             {
@@ -260,9 +276,23 @@ namespace Server
             {
                 player.SendInfoMsg("Creation Failed at " + pos.ToString());
             }
+        }
 
 
 
+        private void Player_PlayerDamageEvent(Player player, string action)
+        {
+            string[] command = action.Split(' ');
+
+            string id = command[1];
+            string amount = command[2];
+
+            SpaceObject target = player.Sector.GetSpaceObject(uint.Parse(id));
+
+            if (target is IHealth)
+            {
+                ((IHealth)target).AffectHealth(int.Parse(amount) * -1);
+            }
         }
 
 

@@ -11,9 +11,15 @@ namespace Server.Space
         //WARNING
         //Overides Equals()
 
-
-        private Dictionary<Transform, SpaceObject> spaceObjectList;
+        //TODO: Change Key type
+        //Objects cannot be in the same position when using their transform for the key
+        private Dictionary<uint, SpaceObject> spaceObjectList;
         public SectorTransform SectorTransform;
+
+        //Every item spawned in sector is given an id
+        private uint idInSectorCounter = 0;
+
+
 
 
         //=============================================================================
@@ -23,7 +29,7 @@ namespace Server.Space
         public Sector (SectorTransform newPos)
         {
 
-            spaceObjectList = new Dictionary<Transform, SpaceObject>();
+            spaceObjectList = new Dictionary<uint, SpaceObject>();
 
             SectorTransform = newPos;
         }
@@ -42,42 +48,56 @@ namespace Server.Space
         //General Methods
         //=============================================================================
 
-        internal string[] GetSpaceObjectList ()
+        internal SpaceObject[] GetSpaceObjectList ()
         {
-            List<string> list = new List<string>();
-            foreach (KeyValuePair<Transform, SpaceObject> spaceObject in spaceObjectList)
+
+            ;
+            List<SpaceObject> list = new List<SpaceObject>();
+            foreach (KeyValuePair<uint, SpaceObject> spaceObject in spaceObjectList)
             {
-                list.Add(spaceObject.Value.Name);
+                list.Add(spaceObject.Value);
             }
             return list.ToArray();
         }
 
+        internal SpaceObject GetSpaceObject (uint id)
+        {
+            return spaceObjectList[id];
+        }
 
-        internal bool SpawnSpaceObject(SpaceObject newObject, Transform pos)
-        {   
+        internal bool SpawnSpaceObject(SpaceObject newObject)
+        {
 
-            if (!spaceObjectList.ContainsKey(pos))
+            newObject.DestroyEvent += SpaceObject_DestroyEvent;
+            newObject.IdInSector = idInSectorCounter;
+            spaceObjectList.Add(idInSectorCounter, newObject);
+            idInSectorCounter += 1;
+            return true;
+
+        }
+
+        
+
+        internal bool RemoveSpaceObject (uint id)
+        {
+            if (spaceObjectList.ContainsKey(id))
             {
-                newObject.Transform = pos;
-                spaceObjectList.Add(pos, newObject);
+                spaceObjectList.Remove(id);
                 return true;
-            } else
-            {
-                return false;
             }
-            
-            
+
+            return false;
         }
 
 
+        //=============================================================================
+        //Event Handlers
+        //=============================================================================
 
-
-
-
-
-
-
-
+        internal void SpaceObject_DestroyEvent (object item, EventArgs e)
+        {
+            RemoveSpaceObject(((SpaceObject)item).IdInSector);
+        }
 
 
 
@@ -122,7 +142,7 @@ namespace Server.Space
         public override int GetHashCode()
         {
             var hashCode = -633811817;
-            hashCode = hashCode * -1521134295 + EqualityComparer<Dictionary<Transform, SpaceObject>>.Default.GetHashCode(spaceObjectList);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Dictionary<uint, SpaceObject>>.Default.GetHashCode(spaceObjectList);
             hashCode = hashCode * -1521134295 + EqualityComparer<SectorTransform>.Default.GetHashCode(SectorTransform);
             return hashCode;
         }
