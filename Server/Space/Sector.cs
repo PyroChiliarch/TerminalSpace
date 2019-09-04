@@ -63,24 +63,33 @@ namespace Server.Space
             return spaceObjectList[id];
         }
 
+
+
         internal bool SpawnSpaceObject(SpaceObject newObject)
         {
+            //Opposite of DespawnSpaceObject
             //TODO: Make a simple Collision check
             newObject.DestroyEvent += SpaceObject_DestroyEvent;
             newObject.IdInSector = idInSectorCounter;
+            newObject.Sector = this;
             spaceObjectList.Add(idInSectorCounter, newObject);
             idInSectorCounter += 1;
             return true;
 
         }
 
-        
-
-        internal bool RemoveSpaceObject (uint id)
+        internal bool DespawnSpaceObject (uint id)
         {
+            //Opposite of SpawnSpaceObject
+
             if (spaceObjectList.ContainsKey(id))
             {
+                SpaceObject spaceObject = spaceObjectList[id];
+                spaceObject.DestroyEvent -= SpaceObject_DestroyEvent;
+                spaceObject.IdInSector = 0;
+                spaceObject.Sector = null;
                 spaceObjectList.Remove(id);
+
                 return true;
             }
 
@@ -94,7 +103,7 @@ namespace Server.Space
 
         internal void SpaceObject_DestroyEvent (object item, EventArgs e)
         {
-            RemoveSpaceObject(((SpaceObject)item).IdInSector);
+            DespawnSpaceObject(((SpaceObject)item).IdInSector);
         }
 
 

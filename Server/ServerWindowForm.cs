@@ -18,21 +18,19 @@ namespace Server
 {
     public partial class ServerWindowForm : Form
     {
-        //Structs
-        
-
 
         //Listener for new connections
         Listener listener;
 
 
         //List of logged in players
-        Dictionary<Guid, Player> playerList;
+        Dictionary<Guid, Player> PlayerList;
 
-        //Galaxy
-        Galaxy galaxy;
-        
 
+        //=============================================================================
+        //Fields with default values
+        //Where players spawn
+        SectorTransform spawnSector = new SectorTransform(0, 0, 0);
 
 
 
@@ -51,16 +49,12 @@ namespace Server
             listener.SocketAccepted += new Listener.SocketAcceptedHandler(Listener_SocketAccepted);
 
             //List of players
-            playerList = new Dictionary<Guid, Player>();
+            PlayerList = new Dictionary<Guid, Player>();
 
-            //The Galaxy
-            galaxy = new Galaxy();
-            
 
-            SectorTransform spawnSector = new SectorTransform(0, 0, 0);
             Transform newPos = new Transform();
             SpaceObject newObject = new Asteroid();
-            galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject);
+            Galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject);
 
 
 
@@ -93,20 +87,15 @@ namespace Server
         {
             //Setup a new client with a the new connection(Socket)
             Player player = new Player(newConnection, null, new Transform(), Guid.NewGuid());
-
+            
             
             //Setup remoteClient events
             player.RemoteClient.ReceivedMsgEvent += new Client.ClientReceivedMsgHandler(Client_ReceivedMsg);
             player.RemoteClient.DisconnectedEvent += new Client.ClientDisconnectedHandler(Client_Disconnected);
 
             //Setup Player events
-            player.playerActionList["yell"].ActionHandler += Player_PlayerYellEvent;
             player.playerActionList["login"].ActionHandler += Player_PlayerLoginEvent;
-            player.playerActionList["broadcast"].ActionHandler += Player_PlayerBroadcastEvent;
-            player.playerActionList["radar"].ActionHandler += Player_PlayerRadarEvent;
-            player.playerActionList["warpto"].ActionHandler += Player_PlayerWarptoEvent;
-            player.playerActionList["create"].ActionHandler += Player_PlayerCreateEvent;
-            player.playerActionList["damage"].ActionHandler += Player_PlayerDamageEvent;
+            
             
 
             //Add the new client to the list in the window
@@ -146,11 +135,7 @@ namespace Server
         //=============================================================================
         //Player Event Delegates
         //=============================================================================
-        private void Player_PlayerYellEvent(Player player, string action)
-        {
-            Console.WriteLine(player.name + " is Yelling!");
-            player.SendInfoMsg("In space, no one can hear you scream!");
-        }
+        
 
         //Spawns the player and adds them to the active player list
         private void Player_PlayerLoginEvent(Player player, string action)
@@ -159,141 +144,21 @@ namespace Server
 
             //Add player to active player list
             player.name = command[1];
-            playerList.Add(player.PlayerID, player);
+            PlayerList.Add(player.PlayerID, player);
             Console.WriteLine("Player Logged in: " + player.name);
             player.SendSysMsg("You have logged in as " + player.name);
 
+
+
             //Set the players sector
-            SectorTransform sectorPos = new SectorTransform(0, 0, 0);
-            player.Sector = galaxy.GetSector(sectorPos);
+            //Spawn player character
+            Character character = new Character(player);
+            Galaxy.GetSector(spawnSector).SpawnSpaceObject(character);
 
-            player.SendInfoMsg("You are entering sector " + sectorPos.ToString());
+
+            player.SendInfoMsg("You are entering sector " + character.Sector.ToString());
         }
 
-        private void Player_PlayerBroadcastEvent(Player player, string action)
-        {
-            string[] command = action.Split(new char[] { ' ' });
-
-            
-            string msg = "";
-            for (int i = 1; i < command.Length; i++)
-            {
-                msg += command[i];
-                msg += " ";
-            }
-
-            string broadcastMsg = player.name + "-" + msg;
-
-
-            //Sends the broadcast message to every player in the sector that is not itself
-            foreach (KeyValuePair<Guid, Player> otherPlayer in playerList)
-            {
-                if (player.Sector == otherPlayer.Value.Sector
-                    && player.PlayerID != otherPlayer.Value.PlayerID)
-                {
-                    otherPlayer.Value.SendInfoMsg(broadcastMsg);
-                }
-            }
-        }
-
-        private void Player_PlayerRadarEvent(Player player, string action)
-        {
-
-            SpaceObject[] objectList = player.Sector.GetSpaceObjectList();
-            player.SendInfoMsg("Sending radar ping in: " + player.Sector.ToString());
-            player.SendInfoMsg("Objects Found: " + objectList.Length.ToString());
-
-            foreach (SpaceObject item in objectList)
-            {
-                if (item is IHealth)
-                {
-                    IHealth target = item as IHealth;
-                    player.SendInfoMsg(item.IdInSector + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
-                }
-                else
-                {
-                    player.SendInfoMsg(item.IdInSector + " - " + item.Name);
-                }
-                
-
-            }
-        }
-
-        private void Player_PlayerWarptoEvent(Player player, string action)
-        {
-            string[] command = action.Split(' ');
-
-            //Generate sector coord from command
-            //Catch errors
-            SectorTransform destination;
-            try
-            {
-                destination = new SectorTransform
-                (
-                    int.Parse(command[1]), //x
-                    int.Parse(command[2]), //y
-                    int.Parse(command[3])  //z
-                );
-            }
-            catch
-            {
-                Console.WriteLine("Invalid Warp Command: " + action);
-                player.SendInfoMsg("Invalid Warp Command");
-                return;
-            }
-
-            
-            player.WarpTo(galaxy.GetSector(destination));
-
-            player.SendInfoMsg("Arrived at " + destination.ToString());
-        }
-
-        private void Player_PlayerCreateEvent(Player player, string action)
-        {
-            string[] command = action.Split(' ');
-
-            //first arg
-            string name = command[1];
-
-            //Second arg
-            Transform pos = new Transform();
-            string[] parts = command[2].Split(',');
-            pos.position.x = float.Parse(parts[0]);
-            pos.position.y = float.Parse(parts[1]);
-            pos.position.z = float.Parse(parts[2]);
-
-            Asteroid asteroid = new Asteroid(name, 100);
-            asteroid.Transform = pos;
-
-            bool result = galaxy.GetSector(player.Sector.SectorTransform).SpawnSpaceObject(asteroid);
-
-            if (result)
-            {
-                player.SendInfoMsg("Object Created at " + pos.ToString());
-            }
-            else
-            {
-                player.SendInfoMsg("Creation Failed at " + pos.ToString());
-            }
-        }
-
-
-
-        private void Player_PlayerDamageEvent(Player player, string action)
-        {
-            string[] command = action.Split(' ');
-
-            string id = command[1];
-            string amount = command[2];
-
-            SpaceObject target = player.Sector.GetSpaceObject(uint.Parse(id));
-
-            if (target is IHealth)
-            {
-                ((IHealth)target).AffectHealth(int.Parse(amount) * -1);
-                player.SendInfoMsg(target.Name + " was damaged");
-            }
-        }
 
 
 

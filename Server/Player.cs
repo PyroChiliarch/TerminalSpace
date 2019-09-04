@@ -14,6 +14,9 @@ namespace Server
 {
     class Player
     {
+        //Responsible for Storing the players session
+        //Note: the players character is different from their session
+
 
         //List of commands,
         //Commands are stored with an event that will be called when the action is made
@@ -31,8 +34,7 @@ namespace Server
         //Players postion
         public Transform Transform;
 
-        //Players Galactic Position
-        public Sector Sector;
+        
 
         public Guid PlayerID
         {
@@ -55,7 +57,6 @@ namespace Server
         public Player(Socket newRemoteClient, Sector sector, Transform pos, Guid newPlayerID)
         {
             Transform = new Transform();
-            Sector = sector;
             RemoteClient = new Client(newRemoteClient);
             Transform = pos;
             PlayerID = newPlayerID;
@@ -139,7 +140,7 @@ namespace Server
             //Subscribe to player actions that will affect the player themselves
             playerActionList["echo"].ActionHandler += PlayerActionEcho;
             playerActionList["help"].ActionHandler += PlayerActionHelp;
-            playerActionList["whereami"].ActionHandler += PlayerActionWhereami;
+            
         }
 
 
@@ -193,22 +194,7 @@ namespace Server
         }
 
 
-        //Warps the player to another sector
-        //Returns Success
-        public bool WarpTo(Sector newSector)
-        {
-
-
-            if (Sector != newSector)
-            {
-                Sector = newSector;
-                
-                return true;
-            }
-
-            
-            return false;
-        }
+        
 
 
 
@@ -260,10 +246,7 @@ namespace Server
             }
         }
 
-        private void PlayerActionWhereami (Player player, string action)
-        {
-            SendInfoMsg("You are in sector " + Sector.ToString());
-        }
+        
         
 
 

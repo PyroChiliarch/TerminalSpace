@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Server.Space
 {
-    class Galaxy
+    static class Galaxy
     {
         //Represents a Galaxy
         //Stores, spawns sectors
@@ -15,16 +15,12 @@ namespace Server.Space
         //All sectors exist, but are not spawned and stored until they are needed
         //Once they are spawned they are stored in sectorList
         //For this reason, methods that create of delete sectors are private
-        private Dictionary<SectorTransform, Sector> sectorList;
+        static private Dictionary<SectorTransform, Sector> sectorList = new Dictionary<SectorTransform, Sector>();
 
-        public Galaxy()
-        {
-            sectorList = new Dictionary<SectorTransform, Sector>();
-        }
 
         
         //Return Sector reference
-        public Sector GetSector (SectorTransform pos)
+        static public Sector GetSector (SectorTransform pos)
         {
             Sector sector;
 
@@ -42,7 +38,7 @@ namespace Server.Space
         }
 
         //spawn a sector
-        private Sector SpawnSector (SectorTransform pos)
+        static private Sector SpawnSector (SectorTransform pos)
         {
             Console.WriteLine("There are " + sectorList.Count + " sectors");
             Sector newSector = new Sector(pos);

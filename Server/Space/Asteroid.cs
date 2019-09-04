@@ -71,12 +71,12 @@ namespace Server.Space
             //Kill self if no more health
             if (Health <= 0)
             {
-                this.Kill();
+                this.Die();
             }
         }
 
 
-        public void Kill()
+        public void Die()
         {
             OnDeath();
         }

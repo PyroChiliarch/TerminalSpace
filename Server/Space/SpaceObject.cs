@@ -13,7 +13,7 @@ namespace Server.Space
         public uint IdInSector;
 
         public Transform Transform;
-
+        public Sector Sector;
         
 
 

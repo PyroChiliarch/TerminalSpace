@@ -1,0 +1,242 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Server.Space
+{
+    class Character : SpaceObject, IHealth
+    {
+        //A players ingame representation
+
+        public Player Player;
+
+        public int Health { get; private set; }
+        public int MaxHealth { get; private set; }
+
+        public Character ()
+        {
+            ID = Guid.NewGuid();
+            Name = "Undefined Name";
+            MaxHealth = 100;
+            Health = MaxHealth;
+            Console.WriteLine("Created Character without assigning a player?");
+        }
+
+        public Character (Player newPlayer)
+        {
+            ID = Guid.NewGuid();
+            Name = newPlayer.name;
+            Player = newPlayer;
+            MaxHealth = 100;
+            Health = MaxHealth;
+
+            newPlayer.playerActionList["yell"].ActionHandler += Player_YellEvent;
+            newPlayer.playerActionList["broadcast"].ActionHandler += Player_BroadcastEvent;
+            newPlayer.playerActionList["radar"].ActionHandler += Player_RadarEvent;
+            newPlayer.playerActionList["warpto"].ActionHandler += Player_WarptoEvent;
+            newPlayer.playerActionList["create"].ActionHandler += Player_CreateEvent;
+            newPlayer.playerActionList["damage"].ActionHandler += Player_ActionDamageEvent;
+            newPlayer.playerActionList["whereami"].ActionHandler += Player_ActionWhereamiEvent;
+
+        }
+
+        
+
+
+
+
+
+
+
+
+
+        //=============================================================================
+        //Player Action Event handlers
+        //=============================================================================
+
+        private void Player_YellEvent(Player player, string action)
+        {
+            Console.WriteLine(player.name + " is Yelling!");
+            player.SendInfoMsg("In space, no one can hear you scream!");
+        }
+
+        private void Player_BroadcastEvent(Player player, string action)
+        {
+            string[] command = action.Split(new char[] { ' ' });
+
+
+            string msg = "";
+            for (int i = 1; i < command.Length; i++)
+            {
+                msg += command[i];
+                msg += " ";
+            }
+
+            string broadcastMsg = player.name + "-" + msg;
+
+
+            //Sends the broadcast message to every player in the sector that is not itself
+            foreach (SpaceObject otherObject in Sector.GetSpaceObjectList())
+            {
+                if (otherObject is Character)
+                {
+                    Character otherCharacter = otherObject as Character;
+                    if (Sector == otherCharacter.Sector
+                    && player.PlayerID != otherCharacter.Player.PlayerID)
+                    {
+                        otherCharacter.Player.SendInfoMsg(broadcastMsg);
+
+                    }
+                }
+            }
+        }
+
+
+
+        private void Player_RadarEvent(Player player, string action)
+        {
+
+            SpaceObject[] objectList = Sector.GetSpaceObjectList();
+            player.SendInfoMsg("Sending radar ping in: " + Sector.ToString());
+            player.SendInfoMsg("Objects Found: " + objectList.Length.ToString());
+
+            foreach (SpaceObject item in objectList)
+            {
+                if (item is IHealth)
+                {
+                    IHealth target = item as IHealth;
+                    player.SendInfoMsg(item.IdInSector + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
+                }
+                else
+                {
+                    player.SendInfoMsg(item.IdInSector + " - " + item.Name);
+                }
+
+
+            }
+        }
+
+        private void Player_WarptoEvent(Player player, string action)
+        {
+            string[] command = action.Split(' ');
+
+            //Generate sector coord from command
+            //Catch errors
+            SectorTransform destination;
+            SectorTransform origin = Sector.SectorTransform;
+
+            try
+            {
+                destination = new SectorTransform
+                (
+                    int.Parse(command[1]), //x
+                    int.Parse(command[2]), //y
+                    int.Parse(command[3])  //z
+                );
+            }
+            catch
+            {
+                Console.WriteLine("Invalid Warp Command: " + action);
+                player.SendInfoMsg("Invalid Warp Command");
+                return;
+            }
+
+            //TODO Add Functions in galaxy/sector for warping
+            //WarpTo Function Surrogate
+            Sector.DespawnSpaceObject(this.IdInSector);
+            Galaxy.GetSector(destination).SpawnSpaceObject(this);
+            
+
+            player.SendInfoMsg("Arrived at " + destination.ToString());
+        }
+
+        private void Player_CreateEvent(Player player, string action)
+        {
+            string[] command = action.Split(' ');
+
+            //first arg
+            string name = command[1];
+
+            //Second arg
+            Transform pos = new Transform();
+            string[] parts = command[2].Split(',');
+            pos.position.x = float.Parse(parts[0]);
+            pos.position.y = float.Parse(parts[1]);
+            pos.position.z = float.Parse(parts[2]);
+
+            Asteroid asteroid = new Asteroid(name, 100);
+            asteroid.Transform = pos;
+
+            bool result = Galaxy.GetSector(Sector.SectorTransform).SpawnSpaceObject(asteroid);
+
+            if (result)
+            {
+                player.SendInfoMsg("Object Created at " + pos.ToString());
+            }
+            else
+            {
+                player.SendInfoMsg("Creation Failed at " + pos.ToString());
+            }
+        }
+
+
+
+        private void Player_ActionDamageEvent(Player player, string action)
+        {
+            string[] command = action.Split(' ');
+
+            string id = command[1];
+            string amount = command[2];
+
+            SpaceObject target = Sector.GetSpaceObject(uint.Parse(id));
+
+            if (target is IHealth)
+            {
+                ((IHealth)target).AffectHealth(int.Parse(amount) * -1);
+                player.SendInfoMsg(target.Name + " was damaged");
+            }
+        }
+
+        private void Player_ActionWhereamiEvent(Player player, string action)
+        {
+            Player.SendInfoMsg("You are in sector " + Sector.ToString());
+        }
+
+
+
+
+
+        //=============================================================================
+        //IHealth Mthods
+        //=============================================================================
+
+        //Heal or damage
+        public void AffectHealth(int delta)
+        {
+            Health += delta;
+
+            //Max sure health dosn't go too high
+            if (Health > MaxHealth)
+                Health = MaxHealth;
+
+            //Kill if health too low
+            if (Health <= 0)
+                Die();
+        }
+
+        public void Die()
+        {
+            OnDeath();
+        }
+
+        public void OnDeath()
+        {
+            DeathEvent?.Invoke(this, EventArgs.Empty);
+            Destroy();
+        }
+
+        public event EventHandler DeathEvent;
+    }
+}

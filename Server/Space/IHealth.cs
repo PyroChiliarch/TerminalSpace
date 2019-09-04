@@ -20,7 +20,7 @@ namespace Server.Space
 
         void AffectHealth(int delta);
 
-        void Kill();
+        void Die();
 
 
         void OnDeath();
