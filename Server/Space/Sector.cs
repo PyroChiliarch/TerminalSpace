@@ -11,7 +11,7 @@ namespace Server.Space
         //WARNING
         //Overides Equals()
 
-        private Dictionary<uint, SpaceObject> spaceObjectList;
+        readonly private Dictionary<uint, SpaceObject> spaceObjectList;
         public SectorTransform SectorTransform;
 
         //Every item spawned in sector is given an id

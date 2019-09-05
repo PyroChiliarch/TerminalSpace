@@ -20,17 +20,17 @@ namespace Server
     {
 
         //Listener for new connections
-        Listener listener;
+        readonly Listener listener;
 
 
         //List of logged in players
-        Dictionary<Guid, Player> PlayerList;
+        readonly Dictionary<Guid, Player> PlayerList;
 
 
         //=============================================================================
         //Fields with default values
         //Where players spawn
-        SectorTransform spawnSector = new SectorTransform(0, 0, 0);
+        readonly SectorTransform spawnSector = new SectorTransform(0, 0, 0);
 
 
 
@@ -86,7 +86,7 @@ namespace Server
         private void Listener_SocketAccepted(Socket newConnection)
         {
             //Setup a new client with a the new connection(Socket)
-            Player player = new Player(newConnection, null, new Transform(), Guid.NewGuid());
+            Player player = new Player(newConnection, new Transform(), Guid.NewGuid());
             
             
             //Setup remoteClient events

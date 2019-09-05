@@ -14,9 +14,8 @@ namespace Server
     class Program
     {
         
-        const string version = "v0.1.0";
 
-        static void Main(string[] args)
+        static void Main()
         {
             //Setup Window
             Application.EnableVisualStyles();

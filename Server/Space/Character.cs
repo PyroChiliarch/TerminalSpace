@@ -125,7 +125,6 @@ namespace Server.Space
             //Generate sector coord from command
             //Catch errors
             SectorTransform destination;
-            SectorTransform origin = Sector.SectorTransform;
 
             try
             {

@@ -15,18 +15,17 @@ namespace Server.Space
         //All sectors exist, but are not spawned and stored until they are needed
         //Once they are spawned they are stored in sectorList
         //For this reason, methods that create of delete sectors are private
-        static private Dictionary<SectorTransform, Sector> sectorList = new Dictionary<SectorTransform, Sector>();
+        readonly static private Dictionary<SectorTransform, Sector> sectorList = new Dictionary<SectorTransform, Sector>();
 
 
         
         //Return Sector reference
         static public Sector GetSector (SectorTransform pos)
         {
-            Sector sector;
 
 
             //spawn the sector if it dosn't exist
-            if (sectorList.TryGetValue(pos, out sector))
+            if (sectorList.TryGetValue(pos, out Sector sector))
             {
                 return sector;
             }

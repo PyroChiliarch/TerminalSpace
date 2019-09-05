@@ -54,7 +54,7 @@ namespace Server
         //Constructor
         //=============================================================================
 
-        public Player(Socket newRemoteClient, Sector sector, Transform pos, Guid newPlayerID)
+        public Player(Socket newRemoteClient, Transform pos, Guid newPlayerID)
         {
             Transform = new Transform();
             RemoteClient = new Client(newRemoteClient);
