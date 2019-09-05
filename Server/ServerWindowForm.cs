@@ -53,7 +53,7 @@ namespace Server
 
 
             Transform newPos = new Transform();
-            SpaceObject newObject = new Asteroid();
+            SpaceObject newObject = new Ship();
             Galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject);
 
 

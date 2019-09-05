@@ -13,7 +13,7 @@ namespace Server
         public readonly string Name;
         public readonly string Syntax;
         public readonly string Description;
-        public Player.PlayerActionHandler ActionHandler;
+        public Player.PlayerCommandHandler ActionHandler;
 
 
 
@@ -26,7 +26,7 @@ namespace Server
         //Constructors
         //=============================================================================
 
-        public PlayerAction (string _name, string _syntax, string _description, Player.PlayerActionHandler _actionHandler)
+        public PlayerAction (string _name, string _syntax, string _description, Player.PlayerCommandHandler _actionHandler)
         {
             Name = _name;
             Syntax = _syntax;

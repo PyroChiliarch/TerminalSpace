@@ -15,7 +15,8 @@ namespace Server.Space
         public SectorTransform SectorTransform;
 
         //Every item spawned in sector is given an id
-        private uint idInSectorCounter = 0;
+        //Starts at 1, 0 is undefined
+        private uint idInSectorCounter = 1;
 
 
 
@@ -63,6 +64,10 @@ namespace Server.Space
             return spaceObjectList[id];
         }
 
+        internal SpaceObject GetSpaceObjectAtPos (Vector3 pos)
+        {
+            throw new NotImplementedException();
+        }
 
 
         internal bool SpawnSpaceObject(SpaceObject newObject)
@@ -88,6 +93,7 @@ namespace Server.Space
                 spaceObject.DestroyEvent -= SpaceObject_DestroyEvent;
                 spaceObject.IdInSector = 0;
                 spaceObject.Sector = null;
+                spaceObject.Transform = null;
                 spaceObjectList.Remove(id);
 
                 return true;

@@ -134,7 +134,21 @@ namespace Server
                         "damage",
                         "damage <id>",
                         "Damages and object of <id>",
-                        PlayerDamageEvent)}
+                        PlayerDamageEvent)},
+
+                {"board",
+                    new PlayerAction(
+                        "board",
+                        "board <id>",
+                        "board a vessel",
+                        PlayerBoardEvent)},
+
+                {"depart",
+                    new PlayerAction(
+                        "depart",
+                        "depart",
+                        "depart a vessel",
+                        PlayerBoardEvent)}
             };
 
             //Subscribe to player actions that will affect the player themselves
@@ -263,18 +277,19 @@ namespace Server
         //=============================================================================
         //These are all events for when the player sends a command
 
-        public delegate void PlayerActionHandler(Player player, string action);
+        public delegate void PlayerCommandHandler(Player player, string action);
 
-        public event PlayerActionHandler PlayerLoginEvent;
-        public event PlayerActionHandler PlayerEchoEvent;
-        public event PlayerActionHandler PlayerYellEvent;
-        public event PlayerActionHandler PlayerHelpEvent;
-        public event PlayerActionHandler PlayerWhereamiEvent;
-        public event PlayerActionHandler PlayerBroadcastEvent;
-        public event PlayerActionHandler PlayerRadarEvent;
-        public event PlayerActionHandler PlayerWarptoEvent;
-        public event PlayerActionHandler PlayerCreateEvent;
-        public event PlayerActionHandler PlayerDamageEvent;
-            
+        public event PlayerCommandHandler PlayerLoginEvent;
+        public event PlayerCommandHandler PlayerEchoEvent;
+        public event PlayerCommandHandler PlayerYellEvent;
+        public event PlayerCommandHandler PlayerHelpEvent;
+        public event PlayerCommandHandler PlayerWhereamiEvent;
+        public event PlayerCommandHandler PlayerBroadcastEvent;
+        public event PlayerCommandHandler PlayerRadarEvent;
+        public event PlayerCommandHandler PlayerWarptoEvent;
+        public event PlayerCommandHandler PlayerCreateEvent;
+        public event PlayerCommandHandler PlayerDamageEvent;
+        public event PlayerCommandHandler PlayerBoardEvent;
+        public event PlayerCommandHandler PlayerDepartEvent;
     }
 }

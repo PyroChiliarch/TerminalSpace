@@ -82,6 +82,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Space\IHealth.cs" />
+    <Compile Include="Space\IPilotable.cs" />
     <Compile Include="Space\Sector.cs" />
     <Compile Include="Space\SectorTransform.cs" />
     <Compile Include="ServerWindowForm.cs">
@@ -90,6 +91,7 @@
     <Compile Include="ServerWindowForm.Designer.cs">
       <DependentUpon>ServerWindowForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Space\Ship.cs" />
     <Compile Include="Space\SpaceObject.cs" />
     <Compile Include="Structs.cs" />
     <Compile Include="Space\Transform.cs" />

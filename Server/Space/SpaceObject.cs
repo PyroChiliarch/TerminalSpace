@@ -15,7 +15,8 @@ namespace Server.Space
         public Transform Transform;
         public Sector Sector;
         
-
+        //TODO Implement
+        public SpaceObject Parent;
 
         public string Name
         {
@@ -39,6 +40,9 @@ namespace Server.Space
         {
             ID = Guid.NewGuid();
             Name = "Undefined";
+            Sector = null;
+            Transform = null;
+            IdInSector = 0;
         }
 
 

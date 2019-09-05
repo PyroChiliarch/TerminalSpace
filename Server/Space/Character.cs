@@ -13,36 +13,55 @@ namespace Server.Space
         public Player Player;
 
         public int Health { get; private set; }
-        public int MaxHealth { get; private set; }
+        public int MaxHealth { get; }
 
         public Character ()
         {
+            //Inheritance SpaceObject
             ID = Guid.NewGuid();
             Name = "Undefined Name";
+            Sector = null;
+            Transform = null;
+            IdInSector = 0;
+
+            //IHealth
             MaxHealth = 100;
             Health = MaxHealth;
-            Console.WriteLine("Created Character without assigning a player?");
+
+            Console.WriteLine("Warning: Created Character without assigning player! ID: " + ID.ToString());
         }
 
         public Character (Player newPlayer)
         {
+            //Inheritance
             ID = Guid.NewGuid();
             Name = newPlayer.name;
-            Player = newPlayer;
+            
+            //IHealth
             MaxHealth = 100;
             Health = MaxHealth;
 
+            //Object Specific
+            Player = newPlayer;
+
+            //TODO Make this smaller
             newPlayer.playerActionList["yell"].ActionHandler += Player_YellEvent;
             newPlayer.playerActionList["broadcast"].ActionHandler += Player_BroadcastEvent;
             newPlayer.playerActionList["radar"].ActionHandler += Player_RadarEvent;
             newPlayer.playerActionList["warpto"].ActionHandler += Player_WarptoEvent;
             newPlayer.playerActionList["create"].ActionHandler += Player_CreateEvent;
-            newPlayer.playerActionList["damage"].ActionHandler += Player_ActionDamageEvent;
-            newPlayer.playerActionList["whereami"].ActionHandler += Player_ActionWhereamiEvent;
+            newPlayer.playerActionList["damage"].ActionHandler += Player_DamageEvent;
+            newPlayer.playerActionList["whereami"].ActionHandler += Player_WhereamiEvent;
+            newPlayer.playerActionList["board"].ActionHandler += Player_BoardEvent;
+            newPlayer.playerActionList["depart"].ActionHandler += Player_DepartEvent;
 
         }
 
         
+
+
+
+
 
 
 
@@ -78,18 +97,16 @@ namespace Server.Space
 
 
             //Sends the broadcast message to every player in the sector that is not itself
-            foreach (SpaceObject otherObject in Sector.GetSpaceObjectList())
+            IEnumerable<Character> characters = Sector.GetSpaceObjectList().OfType<Character>();
+            foreach (Character otherCharacter in characters)
             {
-                if (otherObject is Character)
+                if (Sector == otherCharacter.Sector
+                && player.PlayerID != otherCharacter.Player.PlayerID)
                 {
-                    Character otherCharacter = otherObject as Character;
-                    if (Sector == otherCharacter.Sector
-                    && player.PlayerID != otherCharacter.Player.PlayerID)
-                    {
-                        otherCharacter.Player.SendInfoMsg(broadcastMsg);
+                    otherCharacter.Player.SendInfoMsg(broadcastMsg);
 
-                    }
                 }
+                
             }
         }
 
@@ -182,7 +199,7 @@ namespace Server.Space
 
 
 
-        private void Player_ActionDamageEvent(Player player, string action)
+        private void Player_DamageEvent(Player player, string action)
         {
             string[] command = action.Split(' ');
 
@@ -195,20 +212,50 @@ namespace Server.Space
             {
                 ((IHealth)target).AffectHealth(int.Parse(amount) * -1);
                 player.SendInfoMsg(target.Name + " was damaged");
+                return;
             }
+
+            player.SendInfoMsg("Object Cannot be Damaged!");
+            return;
         }
 
-        private void Player_ActionWhereamiEvent(Player player, string action)
+        private void Player_WhereamiEvent(Player player, string action)
         {
             Player.SendInfoMsg("You are in sector " + Sector.ToString());
         }
+
+
+        private void Player_BoardEvent(Player player, string action)
+        {
+            string[] command = action.Split(' ');
+
+            Ship ship = Sector.GetSpaceObject(uint.Parse(command[1])) as Ship;
+
+            if (ship != null)
+            {
+                ship.AddPilot(this);
+            }
+        }
+
+        private void Player_DepartEvent(Player player, string action)
+        {
+            string[] command = action.Split(' ');
+
+            Ship ship = Parent as Ship;
+            if (ship != null)
+            {
+                ship.RemovePilot();
+            }
+        }
+
+
 
 
 
 
 
         //=============================================================================
-        //IHealth Mthods
+        //Interface IHealth Mthods
         //=============================================================================
 
         //Heal or damage
