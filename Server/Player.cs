@@ -148,7 +148,7 @@ namespace Server
                         "depart",
                         "depart",
                         "depart a vessel",
-                        PlayerBoardEvent)}
+                        PlayerDepartEvent)}
             };
 
             //Subscribe to player actions that will affect the player themselves

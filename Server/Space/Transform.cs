@@ -59,24 +59,35 @@ namespace Server.Space
 
         public static bool operator ==(Transform c1, Transform c2)
         {
+            if (ReferenceEquals(c1, c2)) return true;
+            if (ReferenceEquals(c1, null)) return false;
             return c1.Equals(c2);
         }
 
         public static bool operator !=(Transform c1, Transform c2)
         {
-            return c1.Equals(c2);
+            return !(c1 == c2);
         }
+
+        public bool Equals(Transform other)
+        {
+            if (ReferenceEquals(other, null))
+                return false;
+
+            return (this.position == other.position);
+        }
+
 
         public override bool Equals(object obj)
         {
-            if (!(obj is Transform))
-            {
-                return false;
-            }
 
-            var transform = (Transform)obj;
-            return position == transform.position;
+            Transform other = obj as Transform;
+            if (ReferenceEquals(other, null))
+                return false;
+            return Equals(other);
         }
+
+
 
         public override int GetHashCode()
         {

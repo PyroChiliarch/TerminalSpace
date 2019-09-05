@@ -12,10 +12,33 @@ namespace Server.Space
         public Guid ID;
         public uint IdInSector;
 
-        public Transform Transform;
+        private Transform transform;
+        public Transform Transform 
+        {
+            get 
+            {
+                if (transform != null)
+                {
+                    return transform;
+                }
+                else if (Parent != null)
+                {
+                    return Parent.Transform;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            set 
+            {
+                this.transform = value;
+            }
+        }
         public Sector Sector;
         
-        //TODO Implement
+        //TODO Implement Parenting
         public SpaceObject Parent;
 
         public string Name
@@ -44,6 +67,30 @@ namespace Server.Space
             Transform = null;
             IdInSector = 0;
         }
+
+
+        //=============================================================================
+        //Property Accessors
+        //=============================================================================
+
+        public virtual Transform GetTransform ()
+        {
+            if (Transform != null)
+            {
+                return Transform;
+            }
+            else if (Parent != null)
+            {
+                return Parent.Transform;
+            }
+            else
+            {
+                throw new NullReferenceException("Tried to reference null transform\nHas the object been spawned?");
+            }
+        }
+
+
+
 
 
         //=============================================================================
