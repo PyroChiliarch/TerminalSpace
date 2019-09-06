@@ -16,11 +16,20 @@ namespace Server.Space
         public Guid ID;
         public uint IdInSector;
 
+        public string Name { get; protected set; }
+
         //TODO Implement Parenting
         public SpaceObject Parent;
 
-        public string Name { get; protected set; }
 
+
+        //=============================================================================
+        //Parent Dependant Properties
+        //=============================================================================
+        //The following properties will return the parents Property if it is null
+        //Useful if the object has been despawn but is still in sector
+        //Eg He boarded a ship, despawned from the sector, but is still in that sector
+        //Use GetRaw***() if you need the actual value
         private Sector _sector;
         public Sector Sector
         {
@@ -78,12 +87,6 @@ namespace Server.Space
 
 
 
-
-
-
-
-
-
         //=============================================================================
         //Constructors
         //=============================================================================
@@ -98,7 +101,30 @@ namespace Server.Space
         }
 
 
-        
+
+
+        //=============================================================================
+        //Property Getters
+        //=============================================================================
+
+        //Gets Sector independant of parent
+        //See _sector Implementation for details
+        public Sector GetRawSector ()
+        {
+            return _sector;
+        }
+
+        //Gets Transform independant of parent
+        //See _transform Implementation for details
+        public Transform GetRawTransform ()
+        {
+            return _transform;
+        }
+
+
+
+
+
 
 
 
@@ -108,12 +134,16 @@ namespace Server.Space
         //=============================================================================
 
 
-        //Removes an object from existence
+        //Violently Removes an object from existence
+        //DO NOT USE if you want to keep the object, use Sector.Despawn() instead
+        //DO USE if this object was destroyed violently but explosions rockets lasers or darth mauls saber
         public virtual void Destroy ()
         {
             OnDestroy();
         }
 
+
+        
 
 
 

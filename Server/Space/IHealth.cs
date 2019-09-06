@@ -20,12 +20,6 @@ namespace Server.Space
 
         void AffectHealth(int delta);
 
-        void Die();
-
-
-        void OnDeath();
-
-        event EventHandler DeathEvent;
 
         
     }

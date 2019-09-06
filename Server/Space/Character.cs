@@ -270,20 +270,12 @@ namespace Server.Space
 
             //Kill if health too low
             if (Health <= 0)
-                Die();
+                Destroy();
         }
 
-        public void Die()
-        {
-            OnDeath();
-        }
 
-        public void OnDeath()
-        {
-            DeathEvent?.Invoke(this, EventArgs.Empty);
-            Destroy();
-        }
 
-        public event EventHandler DeathEvent;
+
+
     }
 }

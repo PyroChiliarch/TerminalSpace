@@ -71,15 +71,11 @@ namespace Server.Space
             //Kill self if no more health
             if (Health <= 0)
             {
-                this.Die();
+                Destroy();
             }
         }
 
 
-        public void Die()
-        {
-            OnDeath();
-        }
 
 
 
@@ -88,20 +84,5 @@ namespace Server.Space
 
 
 
-
-        //=============================================================================
-        //Event Methods
-        //=============================================================================
-
-        public void OnDeath()
-        {
-
-            //Checks if equal to null before calling DeathEvent
-            DeathEvent?.Invoke(this, EventArgs.Empty);
-
-            Destroy();
-        }
-
-        public event EventHandler DeathEvent;
     }
 }
