@@ -135,8 +135,8 @@ namespace Server.Space
 
 
         //Violently Removes an object from existence
-        //DO NOT USE if you want to keep the object, use Sector.Despawn() instead
-        //DO USE if this object was destroyed violently but explosions rockets lasers or darth mauls saber
+        //DO NOT USE if you want to keep the object for use later, use Sector.Despawn() instead
+        //DO USE if this object was destroyed violently by explosions rockets lasers or darth mauls saber
         public virtual void Destroy ()
         {
             OnDestroy();

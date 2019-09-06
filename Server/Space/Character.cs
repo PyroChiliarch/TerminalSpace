@@ -222,6 +222,12 @@ namespace Server.Space
 
         private void Player_WhereamiEvent(Player player, string action)
         {
+            if (Parent != null)
+            {
+                Player.SendInfoMsg("You are in sector " + Sector.ToString() + " aboard " + Parent.ToString() );
+                return;
+            }
+
             Player.SendInfoMsg("You are in sector " + Sector.ToString());
         }
 

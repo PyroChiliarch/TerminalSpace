@@ -98,6 +98,10 @@ namespace Server.Space
                 Destroy();
         }
 
-        
+        public override string ToString()
+        {
+            return Name;
+        }
+
     }
 }
