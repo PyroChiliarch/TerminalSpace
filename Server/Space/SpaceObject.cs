@@ -9,17 +9,51 @@ namespace Server.Space
     abstract class SpaceObject
     {
 
+        //=============================================================================
+        //Fields and Properties
+        //=============================================================================
+
         public Guid ID;
         public uint IdInSector;
 
-        private Transform transform;
+        //TODO Implement Parenting
+        public SpaceObject Parent;
+
+        public string Name { get; protected set; }
+
+        private Sector _sector;
+        public Sector Sector
+        {
+            get
+            {
+                if (_sector != null)
+                {
+                    return _sector;
+                }
+                else if (Parent != null)
+                {
+                    return Parent.Sector;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            set
+            {
+                _sector = value;
+            }
+        }
+
+        private Transform _transform;
         public Transform Transform 
         {
             get 
             {
-                if (transform != null)
+                if (_transform != null)
                 {
-                    return transform;
+                    return _transform;
                 }
                 else if (Parent != null)
                 {
@@ -33,19 +67,14 @@ namespace Server.Space
 
             set 
             {
-                this.transform = value;
+                this._transform = value;
             }
         }
-        public Sector Sector;
         
-        //TODO Implement Parenting
-        public SpaceObject Parent;
+        
+        
 
-        public string Name
-        {
-            get;
-            protected set;
-        }
+        
 
 
 
@@ -69,26 +98,7 @@ namespace Server.Space
         }
 
 
-        //=============================================================================
-        //Property Accessors
-        //=============================================================================
-
-        public virtual Transform GetTransform ()
-        {
-            if (Transform != null)
-            {
-                return Transform;
-            }
-            else if (Parent != null)
-            {
-                return Parent.Transform;
-            }
-            else
-            {
-                throw new NullReferenceException("Tried to reference null transform\nHas the object been spawned?");
-            }
-        }
-
+        
 
 
 

@@ -8,7 +8,7 @@ namespace Server.Space
 {
     interface IPilotable
     {
-        //TODO Implement IPilotable
+        //TODO Receive Control Events from Pilot(Character)
         Character Pilot { get; }
 
         bool AddPilot (Character newPilot);

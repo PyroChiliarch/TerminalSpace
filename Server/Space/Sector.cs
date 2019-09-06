@@ -128,23 +128,32 @@ namespace Server.Space
 
         public static bool operator ==(Sector c1, Sector c2)
         {
+            if (ReferenceEquals(c1, c2)) return true;
+            if (ReferenceEquals(c1, null)) return false;
             return c1.Equals(c2);
         }
 
         public static bool operator !=(Sector c1, Sector c2)
         {
-            return !c1.Equals(c2);
+            return !(c1 == c2);
         }
+
+        public bool Equals(Sector other)
+        {
+            if (ReferenceEquals(other, null))
+                return false;
+
+            return (this.SectorTransform == other.SectorTransform);
+        }
+
 
         public override bool Equals(object obj)
         {
-            if (!(obj is Sector))
-            {
-                return false;
-            }
 
-            var sec = (Sector)obj;
-            return SectorTransform == sec.SectorTransform;
+            Sector other = obj as Sector;
+            if (ReferenceEquals(other, null))
+                return false;
+            return Equals(other);
         }
 
         public override string ToString()
