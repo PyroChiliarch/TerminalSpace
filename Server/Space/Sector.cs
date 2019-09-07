@@ -59,9 +59,20 @@ namespace Server.Space
             return list.ToArray();
         }
 
+
+        //Get a space object fromthe sector via its id
+        //Returns null if invalid
         internal SpaceObject GetSpaceObject (uint id)
         {
-            return spaceObjectList[id];
+            if (spaceObjectList.ContainsKey(id))
+            {
+                return spaceObjectList[id];
+            } 
+            else
+            {
+                return null;
+            }
+            
         }
 
         internal SpaceObject GetSpaceObjectAtPos (Vector3 pos)
@@ -129,7 +140,7 @@ namespace Server.Space
         public static bool operator ==(Sector c1, Sector c2)
         {
             if (ReferenceEquals(c1, c2)) return true;
-            if (ReferenceEquals(c1, null)) return false;
+            if (c1 is null) return false;
             return c1.Equals(c2);
         }
 
@@ -140,7 +151,7 @@ namespace Server.Space
 
         public bool Equals(Sector other)
         {
-            if (ReferenceEquals(other, null))
+            if (other is null)
                 return false;
 
             return (this.SectorTransform == other.SectorTransform);
@@ -150,8 +161,7 @@ namespace Server.Space
         public override bool Equals(object obj)
         {
 
-            Sector other = obj as Sector;
-            if (ReferenceEquals(other, null))
+            if (!(obj is Sector other))
                 return false;
             return Equals(other);
         }

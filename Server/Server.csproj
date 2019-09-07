@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Networking\Client.cs" />
     <Compile Include="PlayerAction.cs" />
     <Compile Include="Space\Asteroid.cs" />
@@ -81,6 +82,8 @@
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Space\IHasRadar.cs" />
+    <Compile Include="Space\IHasWarpDrive.cs" />
     <Compile Include="Space\IHealth.cs" />
     <Compile Include="Space\IPilotable.cs" />
     <Compile Include="Space\Sector.cs" />

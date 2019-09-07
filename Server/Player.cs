@@ -34,8 +34,6 @@ namespace Server
         //Players postion
         public Transform Transform;
 
-        
-
         public Guid PlayerID
         {
             get;
@@ -151,9 +149,8 @@ namespace Server
                         PlayerDepartEvent)}
             };
 
-            //Subscribe to player actions that will affect the player themselves
-            playerActionList["echo"].ActionHandler += PlayerActionEcho;
-            playerActionList["help"].ActionHandler += PlayerActionHelp;
+            
+            
             
         }
 
@@ -240,25 +237,7 @@ namespace Server
         //=============================================================================
 
         //Echos back to the player
-        private void PlayerActionEcho (Player player, string action)
-        {
-            Console.WriteLine("Echo");
-            SendSysMsg("Echo");
-            
-        }
-
-
-        //Lists commands
-        private void PlayerActionHelp (Player player, string action)
-        {
-            foreach (KeyValuePair<string, PlayerAction> command in playerActionList)
-            {
-                SendInfoMsg("------------------");
-                SendInfoMsg(command.Value.Name);
-                SendInfoMsg(command.Value.Syntax);
-                SendInfoMsg(command.Value.Description);
-            }
-        }
+        
 
         
         

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Server.Space
 {
-    class Ship : SpaceObject, IHealth, IPilotable
+    class Ship : SpaceObject, IHealth, IPilotable, IHasRadar, IHasWarpDrive
     {
 
         //=============================================================================
@@ -49,10 +49,18 @@ namespace Server.Space
         {
             if (Pilot == null)
             {
+                //Add Pilot
                 Pilot = newPilot;
                 Pilot.Parent = this;
                 Pilot.Sector.DespawnSpaceObject(Pilot.IdInSector);
+
+                //Add event delegates
+                Pilot.PingRadarEvent += PingRadar;
+                Pilot.WarpToEvent += WarpTo;
+
+                //Send console logs
                 Pilot.Player.SendInfoMsg("Welcome aboard the " + Name + " captain!");
+
                 return true;
             }
 
@@ -64,11 +72,19 @@ namespace Server.Space
         {
             if (Pilot != null)
             {
+                //Remove Pilot
                 Pilot.Transform = this.Transform;
                 Pilot.Parent = null;
                 Sector.SpawnSpaceObject(Pilot);
-                Pilot.Player.SendInfoMsg("You have left the ship");
                 Pilot = null;
+
+                //Remove Event delegates
+                Pilot.PingRadarEvent -= PingRadar;
+                Pilot.WarpToEvent -= WarpTo;
+
+                //Send Console logs
+                Pilot.Player.SendInfoMsg("You have left the ship");
+                
                 return true;
             }
 
@@ -103,5 +119,65 @@ namespace Server.Space
             return Name;
         }
 
+
+
+
+
+
+        //=============================================================================
+        //Other Methods
+        //=============================================================================
+
+        public void PingRadar (Character character, string command)
+        {
+            SpaceObject[] objectList = Sector.GetSpaceObjectList();
+            character.Player.SendInfoMsg("Sending from " + Name + ", ping in: " + Sector.ToString());
+            character.Player.SendInfoMsg("Objects Found: " + objectList.Length.ToString());
+
+            foreach (SpaceObject item in objectList)
+            {
+                if (item is IHealth)
+                {
+                    IHealth target = item as IHealth;
+                    character.Player.SendInfoMsg(item.IdInSector + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
+                }
+                else
+                {
+                    character.Player.SendInfoMsg(item.IdInSector + " - " + item.Name);
+                }
+            }
+        }
+
+        public void WarpTo(Character character, string action)
+        {
+
+            string[] command = action.Split(' ');
+
+            //Generate sector coord from command
+            //Catch errors
+            SectorTransform destination;
+
+            try
+            {
+                destination = new SectorTransform
+                (
+                    int.Parse(command[1]), //x
+                    int.Parse(command[2]), //y
+                    int.Parse(command[3])  //z
+                );
+            }
+            catch
+            {
+                Console.WriteLine("Invalid Warp Command: " + action);
+                Pilot.Player.SendInfoMsg("Invalid Warp Command");
+                return;
+            }
+
+            //TODO Add Functions in galaxy/sector for warping
+            //WarpTo Function Surrogate
+            Sector.DespawnSpaceObject(this.IdInSector);
+            Galaxy.GetSector(destination).SpawnSpaceObject(this);
+
+        }
     }
 }

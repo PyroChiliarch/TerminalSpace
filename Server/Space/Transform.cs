@@ -60,7 +60,7 @@ namespace Server.Space
         public static bool operator ==(Transform c1, Transform c2)
         {
             if (ReferenceEquals(c1, c2)) return true;
-            if (ReferenceEquals(c1, null)) return false;
+            if (c1 is null) return false;
             return c1.Equals(c2);
         }
 
@@ -71,7 +71,7 @@ namespace Server.Space
 
         public bool Equals(Transform other)
         {
-            if (ReferenceEquals(other, null))
+            if (other is null)
                 return false;
 
             return (this.position == other.position);
@@ -80,9 +80,7 @@ namespace Server.Space
 
         public override bool Equals(object obj)
         {
-
-            Transform other = obj as Transform;
-            if (ReferenceEquals(other, null))
+            if (!(obj is Transform other))
                 return false;
             return Equals(other);
         }
