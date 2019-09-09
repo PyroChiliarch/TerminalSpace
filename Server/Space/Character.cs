@@ -57,10 +57,12 @@ namespace Server.Space
             newPlayer.playerActionList["whereami"].ActionHandler += Player_WhereamiEvent;
             newPlayer.playerActionList["board"].ActionHandler += Player_BoardEvent;
             newPlayer.playerActionList["depart"].ActionHandler += Player_DepartEvent;
-
+            newPlayer.playerActionList["moveto"].ActionHandler += Player_MovetoEvent;
         }
 
         
+
+
 
 
 
@@ -259,7 +261,7 @@ namespace Server.Space
                 if (item is IHealth)
                 {
                     IHealth target = item as IHealth;
-                    player.SendInfoMsg(item.IdInSector + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
+                    player.SendInfoMsg(item.IdInSector + " - " + item.Transform.position.ToString() + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
                 }
                 else
                 {
@@ -274,6 +276,8 @@ namespace Server.Space
         private void Player_WarptoEvent(Player player, string action)
         {
             //Try to call the event first
+            //Will only run if there are no subscribers to the warpto event
+            //I.E is aboard a ship
             if (WarpToEvent != null)
             {
                 WarpToEvent(this, action);
@@ -310,6 +314,18 @@ namespace Server.Space
 
             player.SendInfoMsg("Arrived at " + destination.ToString());
         }
+
+        private void Player_MovetoEvent(Player player, string action)
+        {
+
+            string[] command = action.Split(' ');
+
+
+            Transform.position = new Vector3(float.Parse(command[1]), float.Parse(command[2]), float.Parse(command[2]));
+            Player.SendInfoMsg("You moved to " + Transform.position.ToString());
+        }
+
+
 
 
 

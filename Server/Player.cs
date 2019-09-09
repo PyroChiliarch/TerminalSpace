@@ -31,9 +31,6 @@ namespace Server
 
         public string name;
 
-        //Players postion
-        public Transform Transform;
-
         public Guid PlayerID
         {
             get;
@@ -54,9 +51,7 @@ namespace Server
 
         public Player(Socket newRemoteClient, Transform pos, Guid newPlayerID)
         {
-            Transform = new Transform();
             RemoteClient = new Client(newRemoteClient);
-            Transform = pos;
             PlayerID = newPlayerID;
 
 
@@ -119,6 +114,13 @@ namespace Server
                         "warpto <x> <y> <z>",
                         "Warp to another sector",
                         PlayerWarptoEvent) },
+
+                {"moveto",
+                    new PlayerAction(
+                        "moveto",
+                        "moveto <x> <y> <z>",
+                        "Move to another position",
+                        PlayerMovetoEvent) },
 
                 {"create",
                     new PlayerAction(
@@ -266,6 +268,7 @@ namespace Server
         public event PlayerCommandHandler PlayerBroadcastEvent;
         public event PlayerCommandHandler PlayerRadarEvent;
         public event PlayerCommandHandler PlayerWarptoEvent;
+        public event PlayerCommandHandler PlayerMovetoEvent;
         public event PlayerCommandHandler PlayerCreateEvent;
         public event PlayerCommandHandler PlayerDamageEvent;
         public event PlayerCommandHandler PlayerBoardEvent;
