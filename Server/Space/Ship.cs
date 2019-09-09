@@ -45,6 +45,7 @@ namespace Server.Space
         //Interface IPilotable Methods
         //=============================================================================
 
+        //Returns success
         public bool AddPilot (Character newPilot)
         {
             if (Pilot == null)
@@ -68,6 +69,8 @@ namespace Server.Space
             return false;
         }
 
+
+        //Returns Success
         public bool RemovePilot ()
         {
             if (Pilot != null)
@@ -139,7 +142,7 @@ namespace Server.Space
                 if (item is IHealth)
                 {
                     IHealth target = item as IHealth;
-                    character.Player.SendInfoMsg(item.IdInSector + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
+                    character.Player.SendInfoMsg(item.IdInSector + " - " + item.Transform.position.ToString() + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
                 }
                 else
                 {

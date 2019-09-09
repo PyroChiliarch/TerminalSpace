@@ -83,6 +83,12 @@ namespace Server.Space
 
         internal bool SpawnSpaceObject(SpaceObject newObject)
         {
+            //Error checking
+            if (newObject.Transform == null || newObject.Transform.position == null)
+            {
+                throw new NullReferenceException("Cannot spawn object will null Transform/Position");
+            }
+
             //Opposite of DespawnSpaceObject
             //TODO: Make a simple Collision check
             newObject.DestroyEvent += SpaceObject_DestroyEvent;

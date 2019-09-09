@@ -54,6 +54,7 @@ namespace Server
 
             Transform newPos = new Transform();
             SpaceObject newObject = new Ship();
+            newObject.Transform = newPos;
             Galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject);
 
 
@@ -152,7 +153,9 @@ namespace Server
 
             //Set the players sector
             //Spawn player character
+            Transform newPos = new Transform();
             Character character = new Character(player);
+            character.Transform = newPos;
             Galaxy.GetSector(spawnSector).SpawnSpaceObject(character);
 
 
