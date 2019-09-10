@@ -14,72 +14,25 @@ namespace ClientGUI.Helpers.Graphics
     {
 
 
-
-        public static int LoadShader(ShaderType eShaderType, string strShaderFilename)
-        {
-            if (!File.Exists(strShaderFilename))
-            {
-                Console.WriteLine("Could not find the file " + strShaderFilename, "Error");
-                throw new Exception("Could not find the file " + strShaderFilename);
-            }
-
-            int shader = GL.CreateShader(eShaderType);
-            using (var streamReader = new StreamReader(strShaderFilename))
-            {
-                GL.ShaderSource(shader, streamReader.ReadToEnd());
-            }
-
-            GL.CompileShader(shader);
-
-            GL.GetShader(shader, ShaderParameter.CompileStatus, out int status);
-            if (status == 0)
-            {
-                GL.GetShader(shader, ShaderParameter.InfoLogLength, out _);
-
-                GL.GetShaderInfoLog(shader, out string strInfoLog);
-
-                string strShaderType;
-                switch (eShaderType)
-                {
-                    case ShaderType.FragmentShader:
-                        strShaderType = "fragment";
-                        break;
-                    case ShaderType.VertexShader:
-                        strShaderType = "vertex";
-                        break;
-                    case ShaderType.GeometryShader:
-                        strShaderType = "geometry";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException("eShaderType");
-                }
-                Console.WriteLine("Compile failure in " + strShaderType + " shader:\n" + strInfoLog, "Error");
-                throw new Exception("Compile failure in " + strShaderType + " shader:\n" + strInfoLog);
-            }
-
-            return shader;
-        }
-
-
-
-
-
-
-
-
-
-
+        //Links multiple shaders together into a shader pipeline program
         public static int CreateProgram(List<int> shaderList)
         {
+            //Initialise the new program
             int program = GL.CreateProgram();
 
+            //Attach all the shaders to the new program
             foreach (int shader in shaderList)
             {
                 GL.AttachShader(program, shader);
             }
 
+            //Finish making the program
             GL.LinkProgram(program);
 
+
+
+
+            //Check for errors
             GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int status);
             if (status == 0)
             {
@@ -90,11 +43,14 @@ namespace ClientGUI.Helpers.Graphics
                 throw new Exception("Shader Linker failure: " + strInfoLog);
             }
 
+
+            //Detach the shaders from the now complied program
             foreach (int shader in shaderList)
             {
                 GL.DetachShader(program, shader);
             }
 
+            //Return the ready to use program
             return program;
         }
 
