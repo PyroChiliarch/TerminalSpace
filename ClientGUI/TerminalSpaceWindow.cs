@@ -14,8 +14,8 @@ namespace ClientGUI
     class TerminalSpaceWindow : GameWindow
     {
 
-
-
+        Renderer Renderer = new Renderer();
+        InputHandler InputHandler = new InputHandler();
 
 
         //=============================================================================
@@ -29,6 +29,13 @@ namespace ClientGUI
 
 
 
+
+
+
+
+
+
+
         //=============================================================================
         //Overrides
         //=============================================================================
@@ -37,19 +44,19 @@ namespace ClientGUI
         {
             base.OnLoad(arg);
 
-            GL.ClearColor(0, 1, 0, 0);
+            Renderer.Load();
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             base.OnRenderFrame(args);
 
+            Renderer.RenderFrame(this);
             
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            
 
 
-
-            SwapBuffers();
+            
         }
 
         protected override void OnUpdateFrame(FrameEventArgs args)
@@ -60,7 +67,7 @@ namespace ClientGUI
         }
 
 
-
+        
 
 
 
