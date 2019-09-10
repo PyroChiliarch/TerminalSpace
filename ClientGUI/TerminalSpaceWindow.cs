@@ -14,8 +14,8 @@ namespace ClientGUI
     class TerminalSpaceWindow : GameWindow
     {
 
-        Renderer Renderer = new Renderer();
-        InputHandler InputHandler = new InputHandler();
+        readonly Renderer Renderer = new Renderer();
+        readonly InputHandler InputHandler = new InputHandler();
 
 
         //=============================================================================
@@ -45,6 +45,8 @@ namespace ClientGUI
             base.OnLoad(arg);
 
             Renderer.Load();
+
+
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
