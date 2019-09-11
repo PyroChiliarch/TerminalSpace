@@ -13,16 +13,16 @@ namespace ClientGUI
 
 
 
-        public Vector3 position;
-        public Quaternion rotation;
-        public float scale;
+        public RenderTransform transform;
+
+        
 
         public RenderObject()
         {
             //Sets everything to nill/nothing
-            position = new Vector3(0, 0, 0);
-            rotation = new Quaternion(0, 0, 0, 1f);
-            scale = 1f;
+            transform.position = new Vector3(0, 0, 0);
+            transform.rotation = new Quaternion(0, 0, 0, 1f);
+            transform.scale = 1f;
             textureID = 0;
             meshID = 0;
         }
@@ -34,14 +34,14 @@ namespace ClientGUI
 
         public virtual Matrix4 GetModelMatrix()
         {
-            Matrix4 modelMatrix = Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(position) * Matrix4.CreateScale(scale);
+            Matrix4 modelMatrix = Matrix4.CreateFromQuaternion(transform.rotation) * Matrix4.CreateTranslation(transform.position) * Matrix4.CreateScale(transform.scale);
             return modelMatrix;
         }
 
         public void Translate(Vector3 translation)
         {
 
-            position += Helpers.Graphics.ExtendedMath.RotateVecByQuat(translation, rotation);
+            transform.position += Helpers.Graphics.ExtendedMath.RotateVecByQuat(translation, transform.rotation);
 
         }
 
@@ -57,7 +57,7 @@ namespace ClientGUI
             //p = q*vq
             //
 
-            position += Helpers.Graphics.ExtendedMath.RotateVecByQuat(translation, rotation);
+            transform.position += Helpers.Graphics.ExtendedMath.RotateVecByQuat(translation, transform.rotation);
 
         }
 
@@ -68,8 +68,8 @@ namespace ClientGUI
 
         public void Rotate(Quaternion newAngle)
         {
-            rotation *= newAngle;
-            rotation.Normalize();
+            transform.rotation *= newAngle;
+            transform.rotation.Normalize();
         }
         
     }

@@ -69,6 +69,28 @@ namespace ClientGUI
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         //=============================================================================
         //Methods
         //=============================================================================
@@ -158,6 +180,28 @@ namespace ClientGUI
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         internal void RenderFrame(TerminalSpaceWindow window)
         {
 
@@ -218,6 +262,25 @@ namespace ClientGUI
             //Display the drawn image
             window.SwapBuffers();
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -330,6 +393,25 @@ namespace ClientGUI
             //Return the location of the texture that were loaded
             return meshBufferIDs;
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -4,7 +4,9 @@ namespace ClientGUI
 {
     internal class RenderTransform
     {
-        Vector3 positon;
+        public Vector3 position;
+        public Quaternion rotation;
+        public float scale;
 
     }
 }
