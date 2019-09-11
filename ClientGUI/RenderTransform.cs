@@ -109,6 +109,14 @@ namespace ClientGUI
         }
 
 
+        public Matrix4 GetCameraModelMatrix()
+        {
+            //The camera has to move position then rotate, unlike a normal object
+            //This is why override
+            Matrix4 modelMatrix = Matrix4.CreateTranslation(position) * Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateScale(scale);
+            return modelMatrix;
+        }
+
 
     }
 }
