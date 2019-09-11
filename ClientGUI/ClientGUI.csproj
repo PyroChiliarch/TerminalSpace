@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="FileOps.cs" />
-    <Compile Include="Helpers\Graphics\ExtendedMath.cs" />
     <Compile Include="Helpers\Graphics\Shaders.cs" />
     <Compile Include="InputHandler.cs" />
     <Compile Include="Program.cs" />
