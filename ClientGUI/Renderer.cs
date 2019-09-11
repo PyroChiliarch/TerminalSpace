@@ -146,14 +146,14 @@ namespace ClientGUI
 
             //=============================================================================
             //Setup Camera
-            camera.Translate(new Vector3(0, 0.00f, 0f));
+            camera.Transform.Translate(new Vector3(0, 0.00f, 0f));
             camera.SetProjection(1f, 0.001f, 20f);
 
             //=============================================================================
             //Load Objects
             test.meshID = meshLocationList["Cube"].bufferID;
             test.textureID = textureLocationList["Cube"].textureID;
-            test.Translate(new Vector3(0, 0, 0));
+            test.Transform.Translate(new Vector3(0, 0, 0));
             renderList.Add(test);
             /*
             public void SpawnObject(string _meshName, string _textureName, Vector3 _position)
@@ -233,7 +233,7 @@ namespace ClientGUI
             {
                 //Vars
                 //Grab object information from arrays
-                Matrix4 modelMatrix = renderList[i].GetModelMatrix();
+                Matrix4 modelMatrix = renderList[i].Transform.GetModelMatrix();
                 int texture = renderList[i].textureID;
 
                 //Fix this v, we want other shapes too!

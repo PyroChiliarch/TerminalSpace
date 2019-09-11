@@ -66,17 +66,17 @@ namespace ClientGUI
         //Returns Get Model Matrix
         public Matrix4 GetViewMatrix()
         {
-            return GetModelMatrix();
+            return GetCameraModelMatrix();
         }
 
 
 
 
-        public override Matrix4 GetModelMatrix()
+        public Matrix4 GetCameraModelMatrix()
         {
             //The camera has to move position then rotate, unlike a normal object
             //This is why override
-            Matrix4 modelMatrix = Matrix4.CreateTranslation(position) * Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateScale(scale);
+            Matrix4 modelMatrix = Matrix4.CreateTranslation(Transform.position) * Matrix4.CreateFromQuaternion(Transform.rotation) * Matrix4.CreateScale(Transform.scale);
             return modelMatrix;
         }
 
