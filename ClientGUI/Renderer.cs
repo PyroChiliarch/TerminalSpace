@@ -36,7 +36,7 @@ namespace ClientGUI
 
         Matrix4 identMatrix = Matrix4.Identity;
         
-        int texUni;
+        //int texUni;
         
         //TODO Temp
         Structs.MeshData mesh;
@@ -218,7 +218,6 @@ namespace ClientGUI
             //texUni = GL.GetUniformLocation(programList["default"], "tex");
             
             //???
-            Matrix4 identMatrix = Matrix4.Identity;
             Matrix4 viewMatrix = camera.GetViewMatrix();
             Matrix4 projectionMatrix = camera.GetProjectionMatrix();
             GL.UniformMatrix4(viewMatrixUni, false, ref viewMatrix);//camer.view matrix
