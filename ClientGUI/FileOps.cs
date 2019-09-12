@@ -199,8 +199,6 @@ namespace ClientGUI
             }
 
 
-            //Dispose before returning 
-            streamReader.Dispose();
 
             //Return the rawmesh data
             return new Structs.MeshData(
