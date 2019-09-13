@@ -44,8 +44,9 @@ namespace Server.Space
             //Object Specific
             Player = newPlayer;
 
-            //TODO Make this smaller/Refactor
-            //Move all commands from client to character
+            //TODO Research
+            //Make this smaller/Refactor
+            //Needs more research for an effective method to do this
             newPlayer.playerActionList["yell"].ActionHandler += Player_YellEvent;
             newPlayer.playerActionList["broadcast"].ActionHandler += Player_BroadcastEvent;
             newPlayer.playerActionList["echo"].ActionHandler += Player_PlayerActionEcho;

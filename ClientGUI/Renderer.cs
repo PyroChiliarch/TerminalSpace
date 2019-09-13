@@ -275,7 +275,7 @@ namespace ClientGUI
 
 
         //=============================================================================
-        //TODO: Move to seperate class
+        //GPU Uploading Methods
 
         public Dictionary<string, Structs.MeshBufferInfo> LoadMeshesToGPU(Structs.MeshData[] meshData)
         {
