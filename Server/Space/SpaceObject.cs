@@ -77,6 +77,7 @@ namespace Server.Space
             set 
             {
                 this._transform = value;
+                TransformUpdatedEvent(this, value);
             }
         }
         
@@ -161,6 +162,9 @@ namespace Server.Space
         }
         
 
+        public delegate void TransformUpdatedHandler (SpaceObject caller, Transform transform);
+
         public event EventHandler DestroyEvent;
+        public event TransformUpdatedHandler TransformUpdatedEvent;
     }
 }

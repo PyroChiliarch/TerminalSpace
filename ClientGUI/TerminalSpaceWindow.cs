@@ -16,7 +16,7 @@ namespace ClientGUI
 
         readonly Renderer Renderer = new Renderer();
         readonly InputHandler InputHandler = new InputHandler();
-
+        readonly NetConnection NetConnection = new NetConnection();
 
         //=============================================================================
         //Constructors
@@ -45,7 +45,9 @@ namespace ClientGUI
             base.OnLoad(arg);
 
             Renderer.Load();
-
+            NetConnection.MessageReceived += NetworkReceivedMsg;
+            NetConnection.Connect("127.0.0.1", 8);
+            NetConnection.Login("PyroGUI", "1234");
 
         }
 
@@ -82,7 +84,11 @@ namespace ClientGUI
 
         }
 
-
+         
+        protected void NetworkReceivedMsg (string message)
+        {
+            Console.WriteLine("Received " + message);
+        }
 
 
     }

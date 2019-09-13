@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Server.Space
 {
-    class Transform
+    public class Transform
     {
         //WARNING
         //Overides Equals()

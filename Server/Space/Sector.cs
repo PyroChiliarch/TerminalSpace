@@ -89,16 +89,22 @@ namespace Server.Space
                 throw new NullReferenceException("Cannot spawn object will null Transform/Position");
             }
 
+            
+
             //Opposite of DespawnSpaceObject
             //TODO: Make a simple Collision check
-            newObject.DestroyEvent += SpaceObject_DestroyEvent;
             newObject.IdInSector = idInSectorCounter;
+            SpaceObjectSpawnedEvent(this, newObject.Transform, newObject.IdInSector); //Fires the event
+            newObject.DestroyEvent += SpaceObject_DestroyEvent;
+            newObject.TransformUpdatedEvent += SpaceObject_TransformUpdatedEvent;
             newObject.Sector = this;
             spaceObjectList.Add(idInSectorCounter, newObject);
             idInSectorCounter += 1;
             return true;
 
         }
+
+        
 
         internal bool DespawnSpaceObject (uint id)
         {
@@ -107,10 +113,19 @@ namespace Server.Space
             if (spaceObjectList.ContainsKey(id))
             {
                 SpaceObject spaceObject = spaceObjectList[id];
+
+                //Call Events
+                SpaceObjectDespawnedEvent(this, spaceObject.Transform, spaceObject.IdInSector);
+
+                //Remove the space Object
                 spaceObject.DestroyEvent -= SpaceObject_DestroyEvent;
+                spaceObject.TransformUpdatedEvent -= SpaceObject_TransformUpdatedEvent;
                 spaceObject.IdInSector = 0;
                 spaceObject.Sector = null;
                 spaceObject.Transform = null;
+                
+
+                //Update references
                 spaceObjectList.Remove(id);
 
                 return true;
@@ -129,7 +144,10 @@ namespace Server.Space
             DespawnSpaceObject(((SpaceObject)item).IdInSector);
         }
 
-
+        private void SpaceObject_TransformUpdatedEvent(SpaceObject caller, Transform transform)
+        {
+            SpaceObjectPosUpdated(this, transform, caller.IdInSector);
+        }
 
 
 
@@ -184,5 +202,14 @@ namespace Server.Space
             hashCode = hashCode * -1521134295 + EqualityComparer<SectorTransform>.Default.GetHashCode(SectorTransform);
             return hashCode;
         }
+
+
+        public delegate void SpaceObjectModified (Sector caller, Transform pos, uint idInSector);
+
+
+        public event SpaceObjectModified SpaceObjectSpawnedEvent;
+        public event SpaceObjectModified SpaceObjectDespawnedEvent;
+        public event SpaceObjectModified SpaceObjectPosUpdated;
+        
     }
 }
