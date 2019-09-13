@@ -126,7 +126,8 @@ namespace ClientGUI
             //=============================================================================
             //Load Textures
             Structs.TextureData texture = FileOps.LoadTexture("Cube", "Textures/Cube.bmp");
-            //TODO Work here
+            //TODO Load all Meshes, Textures
+            //Auto Load every file in each folder automatically
             //Load texture to GPU
             textureLocationList = LoadTexturesToGPU(new Structs.TextureData[1]
             {
@@ -207,7 +208,7 @@ namespace ClientGUI
             //Set the ShaderProgram
             GL.UseProgram(programList["default"]);
 
-            //TODO: Research
+            //TODO: Abstract away Shader Program selection
             //Should only really need to be called when a new shader program is set
             //Get the IDs for the shader uniforms
             modelMatrixUni = GL.GetUniformLocation(programList["default"], "modelMatrix");
