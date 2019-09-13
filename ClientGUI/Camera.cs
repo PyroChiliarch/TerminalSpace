@@ -36,7 +36,7 @@ namespace ClientGUI
 
 
         //=============================================================================
-        //Setup Methods
+        //Modification Methods
         //=============================================================================
 
 
@@ -55,7 +55,21 @@ namespace ClientGUI
         }
 
 
+        public void SetProjectionAspect(float newZoom, float newClipPlaneNear, float newClipPlaneFar, int width, int height)
+        {
 
+            projectionMatrix = new Matrix4();
+            projectionMatrix = Matrix4.Identity;
+
+            projectionMatrix.M11 = newZoom / (width / (float)height);
+            projectionMatrix.M22 = newZoom;
+            projectionMatrix.M33 = (newClipPlaneFar + newClipPlaneNear) / (newClipPlaneNear - newClipPlaneFar);
+            projectionMatrix.M43 = (2 * newClipPlaneFar * newClipPlaneNear) / (newClipPlaneNear - newClipPlaneFar);
+            projectionMatrix.M34 = 1f;
+
+            
+
+        }
 
 
         //=============================================================================

@@ -63,6 +63,8 @@ namespace ClientGUI
 
         }
 
+        
+
 
 
 
@@ -265,8 +267,15 @@ namespace ClientGUI
 
 
 
+        //Called when resizing the gamewindow
+        internal void Resize(int height, int width)
+        {
+            //Correct camera projection
+            camera.SetProjectionAspect(1f, 0.001f, 20f, width, height);
 
-
+            //Correct the drawing viewport
+            GL.Viewport(0, 0, width, height);
+        }
 
 
 

@@ -64,12 +64,23 @@ namespace ClientGUI
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
-               
+            
+            //TODO: Bug
+            //Can cause out of range exception when resizing
+            //Not repeatable
             Title = RenderFrequency.ToString().Substring(0, 5);
         }
 
 
-        
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+
+            Renderer.Resize(Height, Width);
+            
+
+        }
 
 
 
