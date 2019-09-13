@@ -38,10 +38,7 @@ namespace ClientGUI
         
         //int texUni;
         
-        //TODO Temp
-        //Just used for loading
-        Structs.MeshData mesh;
-        Structs.TextureData texture;
+
 
        
         
@@ -128,7 +125,7 @@ namespace ClientGUI
 
             //=============================================================================
             //Load Textures
-            texture = FileOps.LoadTexture("Cube", "Textures/Cube.bmp");
+            Structs.TextureData texture = FileOps.LoadTexture("Cube", "Textures/Cube.bmp");
             //TODO Work here
             //Load texture to GPU
             textureLocationList = LoadTexturesToGPU(new Structs.TextureData[1]
@@ -140,7 +137,7 @@ namespace ClientGUI
 
             //=============================================================================
             //Load Meshes
-            mesh = FileOps.LoadMesh("Cube", "Meshes/Cube.obj");
+            Structs.MeshData mesh = FileOps.LoadMesh("Cube", "Meshes/Cube.obj");
             meshLocationList = LoadMeshesToGPU(new Structs.MeshData[1]
             {
                 mesh
@@ -167,10 +164,7 @@ namespace ClientGUI
             renderList.Add(test2);
 
 
-            //TODO: ???
-            GL.UniformMatrix4(modelMatrixUni, false, ref identMatrix);
-            GL.UniformMatrix4(viewMatrixUni, false, ref identMatrix);
-            GL.UniformMatrix4(projectionMatrixUni, false, ref identMatrix);
+            
         }
 
 
@@ -213,32 +207,28 @@ namespace ClientGUI
             //Set the ShaderProgram
             GL.UseProgram(programList["default"]);
 
-            //TODO: ???
+            //TODO: Research
+            //Should only really need to be called when a new shader program is set
             //Get the IDs for the shader uniforms
             modelMatrixUni = GL.GetUniformLocation(programList["default"], "modelMatrix");
             viewMatrixUni = GL.GetUniformLocation(programList["default"], "viewMatrix");
             projectionMatrixUni = GL.GetUniformLocation(programList["default"], "projectionMatrix");
             //texUni = GL.GetUniformLocation(programList["default"], "tex");
             
-            //TODO What does this do?
+            //Update matricies in the shader program
             Matrix4 viewMatrix = camera.GetViewMatrix();
             Matrix4 projectionMatrix = camera.GetProjectionMatrix();
-            GL.UniformMatrix4(viewMatrixUni, false, ref viewMatrix);//camer.view matrix
-            GL.UniformMatrix4(projectionMatrixUni, false, ref projectionMatrix);//camera.projectionMatrix);
-
-            //TODO: Simplify
-            Matrix4 identityMatrix = Matrix4.Identity;
-
-
+            GL.UniformMatrix4(viewMatrixUni, false, ref viewMatrix);
+            GL.UniformMatrix4(projectionMatrixUni, false, ref projectionMatrix);
 
             for (int i = 0; i < renderList.Count; i++)
             {
-                //Vars
+
                 //Grab object information from arrays
                 Matrix4 modelMatrix = renderList[i].Transform.GetModelMatrix();
                 int texture = renderList[i].TextureInfo.TextureID;
 
-                //Upload Matrix
+                //Update Matrix (Specific to the object)
                 GL.UniformMatrix4(modelMatrixUni, false, ref modelMatrix);
 
                 //Set Texture
