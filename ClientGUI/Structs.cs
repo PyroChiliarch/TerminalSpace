@@ -83,20 +83,22 @@ namespace ClientGUI
         /// </summary>
         public struct MeshBufferInfo
         {
-            //This file can be trimmed down later
-            public int vertexArrayID;
-            public int bufferID;
-            public int bufferOffset;
-            public int indexBufferID;
-            public int amountOfIndices;
 
+            //All the information needed to point to a mesh stored  in the graphics card
+            public int VertexArrayID;
+            public int bufferID;
+            public int BufferOffset;
+            public int indexBufferID;
+            public int AmountOfIndices;
+
+            //Constructor
             public MeshBufferInfo(int _vertexArrayID, int _bufferID, int _bufferOffset, int _indexBufferID, int _amountOfIndices)
             {
-                vertexArrayID = _vertexArrayID;
+                VertexArrayID = _vertexArrayID;
                 bufferID = _bufferID;
-                bufferOffset = _bufferOffset;
+                BufferOffset = _bufferOffset;
                 indexBufferID = _indexBufferID;
-                amountOfIndices = _amountOfIndices;
+                AmountOfIndices = _amountOfIndices;
             }
         }
 
@@ -110,13 +112,13 @@ namespace ClientGUI
         /// Maps a textureName to a texture on the GPU
         /// This data should be cached
         /// </summary>
-        public struct TextureLocation
+        public struct TextureBufferInfo
         {
-            public int textureID;
+            public int TextureID;
 
-            public TextureLocation(int _textureID)
+            public TextureBufferInfo(int _textureID)
             {
-                textureID = _textureID;
+                TextureID = _textureID;
             }
         }
 

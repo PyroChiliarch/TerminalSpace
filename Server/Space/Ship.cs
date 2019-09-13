@@ -117,10 +117,7 @@ namespace Server.Space
                 Destroy();
         }
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        
 
 
 
@@ -130,6 +127,9 @@ namespace Server.Space
         //=============================================================================
         //Other Methods
         //=============================================================================
+
+
+
 
         public void PingRadar (Character character, string command)
         {
@@ -150,6 +150,12 @@ namespace Server.Space
                 }
             }
         }
+
+
+
+
+
+
 
         public void WarpTo(Character character, string action)
         {
@@ -181,6 +187,15 @@ namespace Server.Space
             Sector.DespawnSpaceObject(this.IdInSector);
             Galaxy.GetSector(destination).SpawnSpaceObject(this);
 
+        }
+
+
+
+
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

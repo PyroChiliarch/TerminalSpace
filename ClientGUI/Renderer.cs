@@ -25,7 +25,7 @@ namespace ClientGUI
         List<RenderObject> renderList = new List<RenderObject>();
 
         //List of textures and Meshes
-        Dictionary<string, Structs.TextureLocation> textureLocationList;
+        Dictionary<string, Structs.TextureBufferInfo> textureLocationList;
         Dictionary<string, Structs.MeshBufferInfo> meshLocationList;
 
         readonly Camera camera = new Camera();
@@ -39,6 +39,7 @@ namespace ClientGUI
         //int texUni;
         
         //TODO Temp
+        //Just used for loading
         Structs.MeshData mesh;
         Structs.TextureData texture;
 
@@ -46,8 +47,7 @@ namespace ClientGUI
         
 
 
-        //Test Object
-        RenderObject test = new RenderObject();
+        
 
 
 
@@ -151,21 +151,18 @@ namespace ClientGUI
 
             //=============================================================================
             //Load Objects
-            test.meshID = meshLocationList["Cube"].bufferID;
-            test.textureID = textureLocationList["Cube"].textureID;
-            test.Transform.Translate(new Vector3(0, 0, 0));
+            RenderObject test = new RenderObject();
+            test.MeshInfo = meshLocationList["Cube"];
+            test.TextureInfo = textureLocationList["Cube"];
+            test.Transform.Translate(new Vector3(0, 0, 2));
             renderList.Add(test);
-            /*
-            public void SpawnObject(string _meshName, string _textureName, Vector3 _position)
-            {
-                Object o = new Object();
-                o.meshID = graphicsLocationData.meshBufferIDs[_meshName].bufferID;
-                o.textureID = graphicsLocationData.textureIDs[_textureName].textureID;
-                o.Translate(_position);
-                objectList.Add(o);
-            }*/
             
-
+            
+            RenderObject test2 = new RenderObject();
+            test2.MeshInfo = meshLocationList["Cube"];
+            test2.TextureInfo = textureLocationList["Cube"];
+            test2.Transform.Translate(new Vector3(0, 1, 2));
+            renderList.Add(test2);
 
 
             //TODO: ???
@@ -205,9 +202,13 @@ namespace ClientGUI
         internal void RenderFrame(TerminalSpaceWindow window)
         {
 
+            //=============================================================================
+            //Setup before drawing
+
             //Clear the screen
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            //Set the ShaderProgram
             GL.UseProgram(programList["default"]);
 
             //TODO: ???
@@ -217,7 +218,7 @@ namespace ClientGUI
             projectionMatrixUni = GL.GetUniformLocation(programList["default"], "projectionMatrix");
             //texUni = GL.GetUniformLocation(programList["default"], "tex");
             
-            //???
+            //TODO What does this do?
             Matrix4 viewMatrix = camera.GetViewMatrix();
             Matrix4 projectionMatrix = camera.GetProjectionMatrix();
             GL.UniformMatrix4(viewMatrixUni, false, ref viewMatrix);//camer.view matrix
@@ -233,10 +234,7 @@ namespace ClientGUI
                 //Vars
                 //Grab object information from arrays
                 Matrix4 modelMatrix = renderList[i].Transform.GetModelMatrix();
-                int texture = renderList[i].textureID;
-
-                //Fix this v, we want other shapes too!
-                Structs.MeshBufferInfo mesh = meshLocationList["Cube"];
+                int texture = renderList[i].TextureInfo.TextureID;
 
                 //Upload Matrix
                 GL.UniformMatrix4(modelMatrixUni, false, ref modelMatrix);
@@ -246,12 +244,12 @@ namespace ClientGUI
                 GL.BindTexture(TextureTarget.Texture2D, texture);
 
                 //Draw Mesh
-                GL.BindVertexArray(mesh.vertexArrayID);
+                GL.BindVertexArray(renderList[i].MeshInfo.VertexArrayID);
                 GL.DrawElements(
                     (BeginMode)PrimitiveType.Triangles,
-                    mesh.amountOfIndices,
+                    renderList[i].MeshInfo.AmountOfIndices,
                     DrawElementsType.UnsignedShort,
-                    mesh.bufferOffset);
+                    renderList[i].MeshInfo.BufferOffset);
             }
 
 
@@ -261,22 +259,6 @@ namespace ClientGUI
             //Display the drawn image
             window.SwapBuffers();
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -417,9 +399,9 @@ namespace ClientGUI
         /// <summary>
         /// Loads its own Textures to the GPU
         /// </summary>
-        public Dictionary<string, Structs.TextureLocation> LoadTexturesToGPU(Structs.TextureData[] textureData)
+        public Dictionary<string, Structs.TextureBufferInfo> LoadTexturesToGPU(Structs.TextureData[] textureData)
         {
-            Dictionary<string, Structs.TextureLocation> textureIDs = new Dictionary<string, Structs.TextureLocation>();
+            Dictionary<string, Structs.TextureBufferInfo> textureIDs = new Dictionary<string, Structs.TextureBufferInfo>();
 
             for (int i = 0; i < textureData.Length; i++)
             {
@@ -429,7 +411,7 @@ namespace ClientGUI
                 //Add the ID to the dictionary
                 textureIDs.Add(
                     textureData[i].name,
-                    new Structs.TextureLocation(textureID));
+                    new Structs.TextureBufferInfo(textureID));
 
                 //Pass texture to graphics card
                 //Start working with texture
