@@ -81,25 +81,55 @@ namespace Server.Space
         }
 
 
-        internal bool SpawnSpaceObject(SpaceObject newObject)
+        internal bool SpawnSpaceObject(SpaceObject newObject, Vector3 newPos)
         {
-            //Error checking
-            if (newObject.Transform == null || newObject.Transform.position == null)
-            {
-                throw new NullReferenceException("Cannot spawn object will null Transform/Position");
-            }
+            
 
+
+            //Spawn the object with correct values
             //Opposite of DespawnSpaceObject
             //TODO: Make a simple Collision check
-            newObject.DestroyEvent += SpaceObject_DestroyEvent;
+            newObject.Transform = new Transform();
+            newObject.Transform.Position = newPos;
             newObject.IdInSector = idInSectorCounter;
             newObject.Sector = this;
+            SpaceObjectSpawnedEvent?.Invoke(this, newObject.Transform, newObject.IdInSector); //Fires the event
+            newObject.DestroyEvent += SpaceObject_DestroyEvent;
+            newObject.TransformUpdatedEvent += SpaceObject_TransformUpdatedEvent;
+            
+            
             spaceObjectList.Add(idInSectorCounter, newObject);
             idInSectorCounter += 1;
+
+            
+
+            
+            //Update Clients
+            foreach (KeyValuePair<uint, SpaceObject> keyValuePair in spaceObjectList)
+            {
+                if (keyValuePair.Value is Character character)
+                {
+                    character.Player.SendUpdateMsg("new:" + newObject.IdInSector + ":" + newObject.Transform.Position.ToString());
+                }
+            }
+
+            //Update newly spawned client (if its a player)
+            //Send every thing in the sector to it
+            if (newObject is Character newChar)
+            {
+                //Spawn each of the existing objects
+                foreach (KeyValuePair<uint, SpaceObject> keyValuePair in spaceObjectList)
+                {
+                    newChar.Player.SendUpdateMsg("new:" + keyValuePair.Value.IdInSector + ":" + keyValuePair.Value.Transform.Position.ToString());
+                }
+            }
+            
             return true;
 
         }
 
+        
+        
         internal bool DespawnSpaceObject (uint id)
         {
             //Opposite of SpawnSpaceObject
@@ -107,11 +137,37 @@ namespace Server.Space
             if (spaceObjectList.ContainsKey(id))
             {
                 SpaceObject spaceObject = spaceObjectList[id];
+
+
+                //Update Clients
+                foreach (KeyValuePair<uint, SpaceObject> keyValuePair in spaceObjectList)
+                {
+                    if (keyValuePair.Value is Character character)
+                    {
+                        character.Player.SendUpdateMsg("rem:" + spaceObject.IdInSector);
+                    }
+                }
+
+
+                if (spaceObject is Character thisCharacter)
+                {
+                    thisCharacter.Player.SendUpdateMsg("clr:");
+                }
+
+                //Call Events
+                SpaceObjectDespawnedEvent?.Invoke(this, spaceObject.Transform, spaceObject.IdInSector);
+
+                //Update references
+                spaceObjectList.Remove(id);
+
+                //Remove the space Object
                 spaceObject.DestroyEvent -= SpaceObject_DestroyEvent;
+                spaceObject.TransformUpdatedEvent -= SpaceObject_TransformUpdatedEvent;
                 spaceObject.IdInSector = 0;
                 spaceObject.Sector = null;
                 spaceObject.Transform = null;
-                spaceObjectList.Remove(id);
+                
+
 
                 return true;
             }
@@ -124,12 +180,30 @@ namespace Server.Space
         //Event Handlers
         //=============================================================================
 
+        
         internal void SpaceObject_DestroyEvent (object item, EventArgs e)
         {
+            //Despawns the spaceobject
             DespawnSpaceObject(((SpaceObject)item).IdInSector);
         }
 
+        private void SpaceObject_TransformUpdatedEvent(SpaceObject caller, Transform transform)
+        {
+            //Fire event
+            SpaceObjectPosUpdated?.Invoke(this, transform, caller.IdInSector);
 
+            //Update Clients
+            IEnumerable<Character> characters = spaceObjectList.OfType<Character>();
+            //Update Clients
+            foreach (KeyValuePair<uint,SpaceObject> entry in spaceObjectList)
+            {
+                if (entry.Value is Character character)
+                character.Player.SendUpdateMsg("mov:" + caller.IdInSector + ":" + transform.Position.ToString());
+            }
+
+        }
+
+        
 
 
 
@@ -184,5 +258,14 @@ namespace Server.Space
             hashCode = hashCode * -1521134295 + EqualityComparer<SectorTransform>.Default.GetHashCode(SectorTransform);
             return hashCode;
         }
+
+
+        public delegate void SpaceObjectModified (Sector caller, Transform pos, uint idInSector);
+
+
+        public event SpaceObjectModified SpaceObjectSpawnedEvent;
+        public event SpaceObjectModified SpaceObjectDespawnedEvent;
+        public event SpaceObjectModified SpaceObjectPosUpdated;
+        
     }
 }

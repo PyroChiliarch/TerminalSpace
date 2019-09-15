@@ -17,7 +17,7 @@ namespace Server
 
 
 
-    struct Vector3
+    public struct Vector3
     {
         //WARNING
         //Overides Equals()

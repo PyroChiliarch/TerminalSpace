@@ -39,12 +39,23 @@ namespace Server.Space
         //spawn a sector
         static private Sector SpawnSector (SectorTransform pos)
         {
-            Console.WriteLine("There are " + sectorList.Count + " sectors");
+            
+            //Create the sector
             Sector newSector = new Sector(pos);
+            //Store the sector
             sectorList.Add(pos, newSector);
+
+            //Fire the event
+            SectorSpawnedEvent?.Invoke(newSector);
+
+            Console.WriteLine("There are " + sectorList.Count + " sectors");
             Console.WriteLine("Spawned New Sector: " + pos.ToString());
             return newSector;
         }
 
+
+        public delegate void SectorSpawnedHandler (Sector sector);
+
+        static public event SectorSpawnedHandler SectorSpawnedEvent;
     }
 }

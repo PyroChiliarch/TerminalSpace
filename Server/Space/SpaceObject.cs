@@ -74,13 +74,29 @@ namespace Server.Space
                 }
             }
 
-            set 
+            internal set
             {
-                this._transform = value;
+                if (_transform != null)
+                {
+                    _transform.UpdatedEvent -= OnTransformUpdated;
+                }
+                _transform = value;
+                if (_transform != null)
+                {
+                    _transform.UpdatedEvent += OnTransformUpdated;
+                }
+
+                TransformUpdatedEvent?.Invoke(this, Transform);
             }
+            
         }
         
-        
+
+
+
+
+
+
         
 
         
@@ -124,7 +140,11 @@ namespace Server.Space
 
 
 
-
+        public void MoveTo (Vector3 newPos)
+        {
+            Transform.Position = newPos;
+            TransformUpdatedEvent?.Invoke(this, Transform);
+        }
 
 
 
@@ -152,6 +172,11 @@ namespace Server.Space
         //Events
         //=============================================================================
 
+        //Called when Transform is updated
+        public void OnTransformUpdated ()
+        {
+            TransformUpdatedEvent?.Invoke(this, Transform);
+        }
 
         //Called when object is destroyed
         //Called Last
@@ -161,6 +186,9 @@ namespace Server.Space
         }
         
 
+        public delegate void TransformUpdatedHandler (SpaceObject caller, Transform transform);
+
         public event EventHandler DestroyEvent;
+        public event TransformUpdatedHandler TransformUpdatedEvent;
     }
 }

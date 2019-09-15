@@ -6,14 +6,26 @@ using System.Threading.Tasks;
 
 namespace Server.Space
 {
-    class Transform
+    public class Transform
     {
         //WARNING
         //Overides Equals()
 
 
+        Vector3 _position;
+        public Vector3 Position
+        {
+            get
+            {
+                return _position;
+            }
 
-        public Vector3 position;
+            set
+            {
+                _position = value;
+                UpdatedEvent?.Invoke();
+            }
+        }
 
 
 
@@ -24,12 +36,12 @@ namespace Server.Space
 
         public Transform ()
         {
-            position = new Vector3(0, 0, 0);
+            Position = new Vector3(0, 0, 0);
         }
 
         public Transform (float x, float y, float z)
         {
-            position = new Vector3(x, y, z);
+            Position = new Vector3(x, y, z);
         }
 
 
@@ -54,7 +66,7 @@ namespace Server.Space
 
         public override string ToString()
         {
-            return "" + position.x + "," + position.y + "," + position.z;
+            return "" + Position.x + "," + Position.y + "," + Position.z;
         }
 
         public static bool operator ==(Transform c1, Transform c2)
@@ -74,7 +86,7 @@ namespace Server.Space
             if (other is null)
                 return false;
 
-            return (this.position == other.position);
+            return (this.Position == other.Position);
         }
 
 
@@ -89,7 +101,12 @@ namespace Server.Space
 
         public override int GetHashCode()
         {
-            return 1206833562 + EqualityComparer<Vector3>.Default.GetHashCode(position);
+            return 1206833562 + EqualityComparer<Vector3>.Default.GetHashCode(Position);
         }
+
+
+        public delegate void UpdatedEventHandler ();
+
+        public event  UpdatedEventHandler UpdatedEvent;
     }
 }

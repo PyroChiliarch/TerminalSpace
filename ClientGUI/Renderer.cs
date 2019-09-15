@@ -21,11 +21,10 @@ namespace ClientGUI
         //List for all the shader programs
         readonly Dictionary<string, int> programList = new Dictionary<string, int>();
 
-        //List of all objects to be drawn
-        List<RenderObject> renderList = new List<RenderObject>();
+        
 
         //List of textures and Meshes
-        Dictionary<string, Structs.TextureLocation> textureLocationList;
+        Dictionary<string, Structs.TextureBufferInfo> textureLocationList;
         Dictionary<string, Structs.MeshBufferInfo> meshLocationList;
 
         readonly Camera camera = new Camera();
@@ -36,18 +35,15 @@ namespace ClientGUI
 
         Matrix4 identMatrix = Matrix4.Identity;
         
-        int texUni;
+        //int texUni;
         
-        //TODO Temp
-        Structs.MeshData mesh;
-        Structs.TextureData texture;
+
 
        
         
 
 
-        //Test Object
-        RenderObject test = new RenderObject();
+        
 
 
 
@@ -63,12 +59,21 @@ namespace ClientGUI
 
         }
 
+        
 
 
 
 
 
 
+        internal RenderObject CreateRenderObject(Vector3 pos, string mesh, string tex)
+        {
+            RenderObject obj = new RenderObject();
+            obj.MeshInfo = meshLocationList[mesh];
+            obj.TextureInfo = textureLocationList[tex];
+            obj.Transform.Translate(pos);
+            return obj;
+        }
 
 
 
@@ -126,8 +131,9 @@ namespace ClientGUI
 
             //=============================================================================
             //Load Textures
-            texture = FileOps.LoadTexture("Cube", "Textures/Cube.bmp");
-            //TODO Work here
+            Structs.TextureData texture = FileOps.LoadTexture("Cube", "Textures/Cube.bmp");
+            //TODO Load all Meshes, Textures
+            //Auto Load every file in each folder automatically
             //Load texture to GPU
             textureLocationList = LoadTexturesToGPU(new Structs.TextureData[1]
             {
@@ -138,7 +144,7 @@ namespace ClientGUI
 
             //=============================================================================
             //Load Meshes
-            mesh = FileOps.LoadMesh("Cube", "Meshes/Cube.obj");
+            Structs.MeshData mesh = FileOps.LoadMesh("Cube", "Meshes/Cube.obj");
             meshLocationList = LoadMeshesToGPU(new Structs.MeshData[1]
             {
                 mesh
@@ -149,29 +155,10 @@ namespace ClientGUI
             camera.Transform.Translate(new Vector3(0, 0.00f, 0f));
             camera.SetProjection(1f, 0.001f, 20f);
 
-            //=============================================================================
-            //Load Objects
-            test.meshID = meshLocationList["Cube"].bufferID;
-            test.textureID = textureLocationList["Cube"].textureID;
-            test.Transform.Translate(new Vector3(0, 0, 0));
-            renderList.Add(test);
-            /*
-            public void SpawnObject(string _meshName, string _textureName, Vector3 _position)
-            {
-                Object o = new Object();
-                o.meshID = graphicsLocationData.meshBufferIDs[_meshName].bufferID;
-                o.textureID = graphicsLocationData.textureIDs[_textureName].textureID;
-                o.Translate(_position);
-                objectList.Add(o);
-            }*/
             
 
 
-
-            //TODO: ???
-            GL.UniformMatrix4(modelMatrixUni, false, ref identMatrix);
-            GL.UniformMatrix4(viewMatrixUni, false, ref identMatrix);
-            GL.UniformMatrix4(projectionMatrixUni, false, ref identMatrix);
+            
         }
 
 
@@ -196,50 +183,40 @@ namespace ClientGUI
 
 
 
-
-
-
-
-
-
-        internal void RenderFrame(TerminalSpaceWindow window)
+        internal void RenderFrame(TerminalSpaceWindow window, Dictionary<uint, RenderObject> renderList)
         {
+
+            //=============================================================================
+            //Setup before drawing
 
             //Clear the screen
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            //Set the ShaderProgram
             GL.UseProgram(programList["default"]);
 
-            //TODO: ???
+            //TODO: Abstract away Shader Program selection
+            //Should only really need to be called when a new shader program is set
             //Get the IDs for the shader uniforms
             modelMatrixUni = GL.GetUniformLocation(programList["default"], "modelMatrix");
             viewMatrixUni = GL.GetUniformLocation(programList["default"], "viewMatrix");
             projectionMatrixUni = GL.GetUniformLocation(programList["default"], "projectionMatrix");
             //texUni = GL.GetUniformLocation(programList["default"], "tex");
             
-            //???
-            Matrix4 identMatrix = Matrix4.Identity;
+            //Update matricies in the shader program
             Matrix4 viewMatrix = camera.GetViewMatrix();
             Matrix4 projectionMatrix = camera.GetProjectionMatrix();
-            GL.UniformMatrix4(viewMatrixUni, false, ref viewMatrix);//camer.view matrix
-            GL.UniformMatrix4(projectionMatrixUni, false, ref projectionMatrix);//camera.projectionMatrix);
+            GL.UniformMatrix4(viewMatrixUni, false, ref viewMatrix);
+            GL.UniformMatrix4(projectionMatrixUni, false, ref projectionMatrix);
 
-            //TODO: Simplify
-            Matrix4 identityMatrix = Matrix4.Identity;
-
-
-
-            for (int i = 0; i < renderList.Count; i++)
+            foreach (RenderObject renderObject in renderList.Values)
             {
-                //Vars
+
                 //Grab object information from arrays
-                Matrix4 modelMatrix = renderList[i].Transform.GetModelMatrix();
-                int texture = renderList[i].textureID;
+                Matrix4 modelMatrix = renderObject.Transform.GetModelMatrix();
+                int texture = renderObject.TextureInfo.TextureID;
 
-                //Fix this v, we want other shapes too!
-                Structs.MeshBufferInfo mesh = meshLocationList["Cube"];
-
-                //Upload Matrix
+                //Update Matrix (Specific to the object)
                 GL.UniformMatrix4(modelMatrixUni, false, ref modelMatrix);
 
                 //Set Texture
@@ -247,12 +224,12 @@ namespace ClientGUI
                 GL.BindTexture(TextureTarget.Texture2D, texture);
 
                 //Draw Mesh
-                GL.BindVertexArray(mesh.vertexArrayID);
+                GL.BindVertexArray(renderObject.MeshInfo.VertexArrayID);
                 GL.DrawElements(
                     (BeginMode)PrimitiveType.Triangles,
-                    mesh.amountOfIndices,
+                    renderObject.MeshInfo.AmountOfIndices,
                     DrawElementsType.UnsignedShort,
-                    mesh.bufferOffset);
+                    renderObject.MeshInfo.BufferOffset);
             }
 
 
@@ -268,24 +245,15 @@ namespace ClientGUI
 
 
 
+        //Called when resizing the gamewindow
+        internal void Resize(int height, int width)
+        {
+            //Correct camera projection
+            camera.SetProjectionAspect(1f, 0.001f, 20f, width, height);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            //Correct the drawing viewport
+            GL.Viewport(0, 0, width, height);
+        }
 
 
 
@@ -294,7 +262,7 @@ namespace ClientGUI
 
 
         //=============================================================================
-        //TODO: Move to seperate class
+        //GPU Uploading Methods
 
         public Dictionary<string, Structs.MeshBufferInfo> LoadMeshesToGPU(Structs.MeshData[] meshData)
         {
@@ -418,9 +386,9 @@ namespace ClientGUI
         /// <summary>
         /// Loads its own Textures to the GPU
         /// </summary>
-        public Dictionary<string, Structs.TextureLocation> LoadTexturesToGPU(Structs.TextureData[] textureData)
+        public Dictionary<string, Structs.TextureBufferInfo> LoadTexturesToGPU(Structs.TextureData[] textureData)
         {
-            Dictionary<string, Structs.TextureLocation> textureIDs = new Dictionary<string, Structs.TextureLocation>();
+            Dictionary<string, Structs.TextureBufferInfo> textureIDs = new Dictionary<string, Structs.TextureBufferInfo>();
 
             for (int i = 0; i < textureData.Length; i++)
             {
@@ -430,7 +398,7 @@ namespace ClientGUI
                 //Add the ID to the dictionary
                 textureIDs.Add(
                     textureData[i].name,
-                    new Structs.TextureLocation(textureID));
+                    new Structs.TextureBufferInfo(textureID));
 
                 //Pass texture to graphics card
                 //Start working with texture
