@@ -46,7 +46,7 @@ namespace Server.Space
             sectorList.Add(pos, newSector);
 
             //Fire the event
-            SectorSpawnedEvent(newSector);
+            SectorSpawnedEvent?.Invoke(newSector);
 
             Console.WriteLine("There are " + sectorList.Count + " sectors");
             Console.WriteLine("Spawned New Sector: " + pos.ToString());

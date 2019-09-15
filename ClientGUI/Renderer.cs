@@ -21,8 +21,7 @@ namespace ClientGUI
         //List for all the shader programs
         readonly Dictionary<string, int> programList = new Dictionary<string, int>();
 
-        //List of all objects to be drawn
-        List<RenderObject> renderList = new List<RenderObject>();
+        
 
         //List of textures and Meshes
         Dictionary<string, Structs.TextureBufferInfo> textureLocationList;
@@ -67,7 +66,14 @@ namespace ClientGUI
 
 
 
-
+        internal RenderObject CreateRenderObject(Vector3 pos, string mesh, string tex)
+        {
+            RenderObject obj = new RenderObject();
+            obj.MeshInfo = meshLocationList[mesh];
+            obj.TextureInfo = textureLocationList[tex];
+            obj.Transform.Translate(pos);
+            return obj;
+        }
 
 
 
@@ -149,20 +155,7 @@ namespace ClientGUI
             camera.Transform.Translate(new Vector3(0, 0.00f, 0f));
             camera.SetProjection(1f, 0.001f, 20f);
 
-            //=============================================================================
-            //Load Objects
-            RenderObject test = new RenderObject();
-            test.MeshInfo = meshLocationList["Cube"];
-            test.TextureInfo = textureLocationList["Cube"];
-            test.Transform.Translate(new Vector3(0, 0, 2));
-            renderList.Add(test);
             
-            
-            RenderObject test2 = new RenderObject();
-            test2.MeshInfo = meshLocationList["Cube"];
-            test2.TextureInfo = textureLocationList["Cube"];
-            test2.Transform.Translate(new Vector3(0, 1, 2));
-            renderList.Add(test2);
 
 
             
@@ -190,13 +183,7 @@ namespace ClientGUI
 
 
 
-
-
-
-
-
-
-        internal void RenderFrame(TerminalSpaceWindow window)
+        internal void RenderFrame(TerminalSpaceWindow window, Dictionary<uint, RenderObject> renderList)
         {
 
             //=============================================================================
@@ -222,12 +209,12 @@ namespace ClientGUI
             GL.UniformMatrix4(viewMatrixUni, false, ref viewMatrix);
             GL.UniformMatrix4(projectionMatrixUni, false, ref projectionMatrix);
 
-            for (int i = 0; i < renderList.Count; i++)
+            foreach (RenderObject renderObject in renderList.Values)
             {
 
                 //Grab object information from arrays
-                Matrix4 modelMatrix = renderList[i].Transform.GetModelMatrix();
-                int texture = renderList[i].TextureInfo.TextureID;
+                Matrix4 modelMatrix = renderObject.Transform.GetModelMatrix();
+                int texture = renderObject.TextureInfo.TextureID;
 
                 //Update Matrix (Specific to the object)
                 GL.UniformMatrix4(modelMatrixUni, false, ref modelMatrix);
@@ -237,12 +224,12 @@ namespace ClientGUI
                 GL.BindTexture(TextureTarget.Texture2D, texture);
 
                 //Draw Mesh
-                GL.BindVertexArray(renderList[i].MeshInfo.VertexArrayID);
+                GL.BindVertexArray(renderObject.MeshInfo.VertexArrayID);
                 GL.DrawElements(
                     (BeginMode)PrimitiveType.Triangles,
-                    renderList[i].MeshInfo.AmountOfIndices,
+                    renderObject.MeshInfo.AmountOfIndices,
                     DrawElementsType.UnsignedShort,
-                    renderList[i].MeshInfo.BufferOffset);
+                    renderObject.MeshInfo.BufferOffset);
             }
 
 

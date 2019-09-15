@@ -52,10 +52,7 @@ namespace Server
             PlayerList = new Dictionary<Guid, Player>();
 
 
-            Transform newPos = new Transform();
-            SpaceObject newObject = new Ship();
-            newObject.Transform = newPos;
-            Galaxy.GetSector(spawnSector).SpawnSpaceObject(newObject);
+            Galaxy.GetSector(spawnSector).SpawnSpaceObject(new Ship(), new Vector3(0, 1, 4));
 
 
 
@@ -151,12 +148,9 @@ namespace Server
 
 
 
-            //Set the players sector
             //Spawn player character
-            Transform newPos = new Transform();
             Character character = new Character(player);
-            character.Transform = newPos;
-            Galaxy.GetSector(spawnSector).SpawnSpaceObject(character);
+            Galaxy.GetSector(spawnSector).SpawnSpaceObject(character, new Vector3(0, -1, 4));
 
 
             player.SendInfoMsg("You are entering sector " + character.Sector.ToString());

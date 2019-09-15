@@ -76,9 +76,8 @@ namespace Server.Space
             if (Pilot != null)
             {
                 //Remove Pilot
-                Pilot.Transform = this.Transform;
                 Pilot.Parent = null;
-                Sector.SpawnSpaceObject(Pilot);
+                Sector.SpawnSpaceObject(Pilot, Transform.Position);
                 Pilot = null;
 
                 //Remove Event delegates
@@ -142,7 +141,7 @@ namespace Server.Space
                 if (item is IHealth)
                 {
                     IHealth target = item as IHealth;
-                    character.Player.SendInfoMsg(item.IdInSector + " - " + item.Transform.position.ToString() + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
+                    character.Player.SendInfoMsg(item.IdInSector + " - " + item.Transform.Position.ToString() + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
                 }
                 else
                 {
@@ -184,8 +183,9 @@ namespace Server.Space
 
             //TODO Add Functions in galaxy/sector for warping
             //WarpTo Function Surrogate
+            Vector3 oldPos = this.Transform.Position;
             Sector.DespawnSpaceObject(this.IdInSector);
-            Galaxy.GetSector(destination).SpawnSpaceObject(this);
+            Galaxy.GetSector(destination).SpawnSpaceObject(this, oldPos);
 
         }
 

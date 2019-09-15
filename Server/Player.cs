@@ -229,7 +229,10 @@ namespace Server
             RemoteClient.Send("SYS:" + msg);
         }
 
-
+        public void SendUpdateMsg(string msg)
+        {
+            RemoteClient.Send("UPD:" + msg);
+        }
 
 
 

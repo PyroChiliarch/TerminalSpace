@@ -34,8 +34,7 @@ namespace ClientGUI
 
         private void MsgReceivedCallback(IAsyncResult ar)
         {
-            try
-            {
+            
 
                 //Receive Message Array
                 //Stop receiveing with the socket so it can be read
@@ -57,11 +56,9 @@ namespace ClientGUI
 
 
                 //Act upon each new message
+                //Just incase we receive multiple at the same time
                 foreach (string msg in incomingMsgs)
                 {
-
-
-                    
 
                     MessageReceived(msg);
                 }
@@ -69,17 +66,10 @@ namespace ClientGUI
 
 
 
-
-
-
-
                 //Begin the thread again and listen for another msg from the connection
                 socket.BeginReceive(new byte[] { 0 }, 0, 0, 0, MsgReceivedCallback, null);
-            }
-            catch
-            {
-                throw new Exception("Error while receiving NetConnection Message");
-            }
+            
+            
         }
 
 

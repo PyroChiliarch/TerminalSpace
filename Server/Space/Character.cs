@@ -15,13 +15,13 @@ namespace Server.Space
         public int Health { get; private set; }
         public int MaxHealth { get; }
 
-        public Character ()
+        public Character (Vector3 newPos)
         {
             //Inheritance SpaceObject
             ID = Guid.NewGuid();
             Name = "Undefined Name";
             Sector = null;
-            Transform = null;
+            this.MoveTo(newPos);
             IdInSector = 0;
 
             //IHealth
@@ -125,24 +125,24 @@ namespace Server.Space
             string name = command[1];
 
             //Second arg
-            Transform pos = new Transform();
+            Vector3 newPos = new Vector3();
             string[] parts = command[2].Split(',');
-            pos.position.x = float.Parse(parts[0]);
-            pos.position.y = float.Parse(parts[1]);
-            pos.position.z = float.Parse(parts[2]);
+
+            newPos.x = float.Parse(parts[0]);
+            newPos.y = float.Parse(parts[1]);
+            newPos.z = float.Parse(parts[2]);
 
             Asteroid asteroid = new Asteroid(name, 100);
-            asteroid.Transform = pos;
 
-            bool result = Galaxy.GetSector(Sector.SectorTransform).SpawnSpaceObject(asteroid);
+            bool result = Galaxy.GetSector(Sector.SectorTransform).SpawnSpaceObject(asteroid, newPos);
 
             if (result)
             {
-                player.SendInfoMsg("Object Created at " + pos.ToString());
+                player.SendInfoMsg("Object Created at " + newPos.ToString());
             }
             else
             {
-                player.SendInfoMsg("Creation Failed at " + pos.ToString());
+                player.SendInfoMsg("Creation Failed at " + newPos.ToString());
             }
         }
 
@@ -176,7 +176,7 @@ namespace Server.Space
                 return;
             }
 
-            Player.SendInfoMsg("You are in sector " + Sector.ToString());
+            Player.SendInfoMsg("You are in sector " + Sector.ToString() + " in Pos " + Transform.Position.ToString());
         }
 
 
@@ -262,7 +262,7 @@ namespace Server.Space
                 if (item is IHealth)
                 {
                     IHealth target = item as IHealth;
-                    player.SendInfoMsg(item.IdInSector + " - " + item.Transform.position.ToString() + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
+                    player.SendInfoMsg(item.IdInSector + " - " + item.Transform.Position.ToString() + " - " + item.Name + " - " + target.Health + "/" + target.MaxHealth);
                 }
                 else
                 {
@@ -309,8 +309,9 @@ namespace Server.Space
 
             //TODO Add Functions in galaxy/sector for warping
             //WarpTo Function Surrogate
+            Vector3 oldPos = Transform.Position;
             Sector.DespawnSpaceObject(this.IdInSector);
-            Galaxy.GetSector(destination).SpawnSpaceObject(this);
+            Galaxy.GetSector(destination).SpawnSpaceObject(this, oldPos);
 
 
             player.SendInfoMsg("Arrived at " + destination.ToString());
@@ -322,8 +323,8 @@ namespace Server.Space
             string[] command = action.Split(' ');
 
 
-            Transform.position = new Vector3(float.Parse(command[1]), float.Parse(command[2]), float.Parse(command[2]));
-            Player.SendInfoMsg("You moved to " + Transform.position.ToString());
+            MoveTo(new Vector3(float.Parse(command[1]), float.Parse(command[2]), float.Parse(command[3])));
+            Player.SendInfoMsg("You moved to " + Transform.Position.ToString());
         }
 
 
