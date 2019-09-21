@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using System.Numerics;
+
 using Server2.Networking;
 using Server2.GameWorld;
 
@@ -25,9 +27,9 @@ namespace Server2
             InitializeComponent();
             
             networkController = new NetworkController();
-
-
-            instance = new Instance();
+            instance = new Instance(new List<Vector3> { 
+                new Vector3(0, 0, 0),
+                new Vector3(0, 0, 1) } );
 
         }
     }

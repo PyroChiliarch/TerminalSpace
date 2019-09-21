@@ -11,6 +11,7 @@ namespace Server2.GameWorld
     class GameObject
     {
 
+        //Has the object been initialised?
         public bool IsLoaded {get; private set; } = false;
 
         private Guid id = Guid.NewGuid();
@@ -23,6 +24,7 @@ namespace Server2.GameWorld
             id = Guid.Empty;
         }
 
+        //Needs to be initialised so that the Guid is not incorrectly set
         public bool Initialise ()
         {
             if (IsLoaded == false)

@@ -22,12 +22,12 @@ namespace Server2.GameWorld
 
 
 
-        public bool Spawn(GameObject obj, Sector sec, Transform newTrans)
+        public bool Spawn(GameObject obj, Sector sector, Transform newTrans)
         {
             if (obj.IsLoaded == true)
             {
                 obj.Transform = newTrans;
-                obj.CurrentSector = sec;
+                obj.CurrentSector = sector;
                 gameObjectList.Add(obj.GetID(), obj);
                 return true;
             }
