@@ -108,12 +108,9 @@ namespace Server2.Networking
                 //Get the new connection
                 Socket s = this.s.EndAccept(asyncResult);
 
-                if (SocketAccepted != null)
-                {
-                    //Calls the event
-                    //A new socket has been connected
-                    SocketAccepted(s);
-                }
+                //Calls the event
+                //A new socket has been connected
+                SocketAccepted?.Invoke(s);
 
                 //Recall this operation again
                 //Forms a loop to continuously listen for connections

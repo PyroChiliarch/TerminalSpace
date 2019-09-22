@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
-
+using Server2.Networking;
 
 namespace Server2.GameWorld
 {
@@ -13,6 +13,7 @@ namespace Server2.GameWorld
 
     class Instance
     {
+        private NetworkService networkService;
 
         private readonly SectorStorage sectorList = new SectorStorage();
 
@@ -20,8 +21,9 @@ namespace Server2.GameWorld
         private List<Vector3> ownedSectors; 
 
 
-        public Instance (List<Vector3> givenSectors )
+        public Instance (NetworkService netServ, List<Vector3> givenSectors )
         {
+            networkService = netServ;
             ownedSectors = givenSectors;
         }
 
@@ -36,6 +38,16 @@ namespace Server2.GameWorld
             return false;
         }
 
+        public bool TakeSector (Vector3 secPos)
+        {
+            if (ownedSectors.Contains(secPos))
+            {
+                ownedSectors.Remove(secPos);
+                return true;
+            }
+
+            return false;
+        }
 
     }
 }

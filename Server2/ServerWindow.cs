@@ -17,7 +17,7 @@ namespace Server2
 {
     public partial class ServerWindow : Form
     {
-        NetworkController networkController;
+        NetworkService networkService;
         Instance instance;
 
 
@@ -26,11 +26,13 @@ namespace Server2
         {
             InitializeComponent();
             
-            networkController = new NetworkController();
-            instance = new Instance(new List<Vector3> { 
+            networkService = new NetworkService();
+            
+
+            instance = new Instance(networkService, new List<Vector3> { 
                 new Vector3(0, 0, 0),
                 new Vector3(0, 0, 1) } );
-
+            
         }
     }
 }
